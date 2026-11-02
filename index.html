@@ -1,745 +1,236 @@
 <!DOCTYPE html>
-<!-- saved from url=(0121)file:///private/var/folders/fr/108fxqnd3lgffksg79gcz9s00000gn/T/29D62680-A432-47AC-AE70-898527F6AEEB/malacats_lab_v2.html -->
-<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
-  <title>MALACATS LAB // Studio V2</title>
-  <link href="./index_files/css2" rel="stylesheet">
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MALACATS // Cómic Feed</title>
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --y: #fde047;
-      --bg: #fef08a;
+      --bg-dark: #09090b;
+      --panel-dark: #18181b;
+      --border: #27272a;
+      --accent: #facc15;
       --ink: #18181b;
-      --d: #09090b;
-      --p: #18181b;
-      --b: #27272a;
-      --a: #facc15;
-      --side-w: 320px;
-      --insp-w: 300px;
+      --sheet-bg: #fef08a;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--d);
+      background: var(--bg-dark);
       color: #f4f4f5;
-      height: 100vh;
+      margin: 0;
+      padding: 0;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-    }
-    /* Top Bar */
-    .top {
-      height: 52px;
-      background: #09090b;
-      border-bottom: 1px solid var(--b);
-      display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 1.2rem;
-      z-index: 10;
+    }
+    .header {
+      width: 100%;
+      background: var(--panel-dark);
+      border-bottom: 2px solid var(--border);
+      padding: 1rem;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
     .brand {
       font-family: 'Patrick Hand', cursive;
-      font-size: 1.6rem;
-      color: var(--a);
-      display: flex;
-      align-items: center;
-      gap: .5rem;
-    }
-    .sw button, .act button {
-      background: #27272a;
-      border: 1px solid #3f3f46;
-      color: #fff;
-      padding: .45rem .85rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: .8rem;
-      transition: all .15s ease;
-    }
-    .sw button:hover, .act button:hover { background: #3f3f46; }
-    .sw button.on { background: var(--a); color: #000; border-color: var(--a); }
-    .act button.pri { background: #eab308; color: #000; border-color: #eab308; }
-
-    /* Workspace */
-    .ws {
-      display: grid;
-      grid-template-columns: var(--side-w) 1fr var(--insp-w);
-      flex: 1;
-      height: calc(100vh - 52px);
-      overflow: hidden;
-    }
-    .side, .side-r {
-      background: var(--p);
-      padding: 1rem;
-      overflow-y: auto;
-      border-right: 1px solid var(--b);
-    }
-    .side-r {
-      border-right: none;
-      border-left: 1px solid var(--b);
-    }
-
-    /* Tabs & Library */
-    .tabs {
-      display: flex;
-      gap: 4px;
-      background: #09090b;
-      padding: 3px;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-    }
-    .tab-btn {
-      flex: 1;
-      font-size: .75rem;
-      font-weight: 600;
-      padding: .4rem;
-      text-align: center;
-      background: transparent;
-      border: none;
-      color: #a1a1aa;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .tab-btn.active {
-      background: #27272a;
-      color: #facc15;
-    }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    h4 {
-      font-size: .7rem;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      color: #a1a1aa;
-      margin: .9rem 0 .5rem;
-    }
-    .lib-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: .6rem;
-    }
-    .lib-item {
-      background: #09090b;
-      border: 1px solid var(--b);
-      border-radius: 8px;
-      padding: .6rem .4rem;
-      text-align: center;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: .3rem;
-      transition: all .15s ease;
-    }
-    .lib-item:hover {
-      border-color: var(--a);
-      background: #1c1917;
-      transform: translateY(-2px);
-    }
-    .lib-item svg {
-      width: 70px;
-      height: 70px;
-    }
-    .lib-item span {
-      font-size: .75rem;
-      font-weight: 600;
-      color: #e4e4e7;
-    }
-
-    /* Canvas Area */
-    .canvas-scroll {
-      background: #121214;
-      overflow-y: auto;
-      display: flex;
-      justify-content: center;
-      padding: 2rem 1rem;
-    }
-    .comic-sheet {
-      background: #fef9c3;
-      border: 4px solid var(--ink);
-      box-shadow: 10px 10px 0 #000;
-      width: 440px;
-      padding: 1.2rem;
-      color: var(--ink);
-      font-family: 'Patrick Hand', cursive;
-      display: flex;
-      flex-direction: column;
-      gap: .75rem;
-    }
-    .comic-title {
-      text-align: center;
       font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      line-height: 1.1;
+      color: var(--accent);
+      margin: 0;
     }
-    .panel {
-      background: #fef08a;
-      border: 3.5px solid var(--ink);
-      height: 175px;
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: outline .1s ease;
-    }
-    .panel.selected {
-      outline: 3px dashed #ef4444;
-      outline-offset: -3px;
-    }
-    .bubble {
-      position: absolute;
-      top: 10px;
-      background: #fff;
-      border: 2.5px solid var(--ink);
-      border-radius: 18px;
-      padding: 6px 14px;
-      font-size: 1.05rem;
-      max-width: 260px;
-      text-align: center;
-      z-index: 6;
-      box-shadow: 2px 2px 0 rgba(0,0,0,0.15);
-      line-height: 1.15;
-    }
-    .bubble.L { left: 70px; }
-    .bubble.R { right: 50px; }
-
-    /* Inspector */
-    .inp-group { margin-bottom: 1rem; }
-    label { display: block; font-size: .75rem; color: #a1a1aa; margin-bottom: .3rem; font-weight: 600; }
-    .inp {
+    .feed-container {
       width: 100%;
-      background: #09090b;
-      border: 1px solid var(--b);
-      color: #fff;
-      padding: .6rem;
-      border-radius: 6px;
-      font-size: .85rem;
+      max-width: 600px; /* Tamaño ideal para simular el feed de móvil */
+      padding: 2rem 1rem;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
     }
-    .inp:focus { outline: none; border-color: var(--a); }
-    .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
-    .opt-btn {
-      background: #09090b;
-      border: 1px solid var(--b);
-      color: #d4d4d8;
-      padding: .5rem;
-      font-size: .75rem;
-      border-radius: 6px;
-      cursor: pointer;
+    .comic-post {
+      background: var(--sheet-bg);
+      border: 4px solid var(--ink);
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.8);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .post-title {
+      font-family: 'Patrick Hand', cursive;
+      color: var(--ink);
+      font-size: 1.5rem;
+      margin: 0 0 0.5rem 0;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    /* Estilos para Tira Única */
+    .single-img {
+      width: 100%;
+      height: auto;
+      border: 3px solid var(--ink);
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+    /* Estilos para Carrusel (Scroll Horizontal nativo) */
+    .carousel-container {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 1rem;
+      padding-bottom: 1rem; /* Espacio para la barra de scroll */
+      -ms-overflow-style: none;  /* IE y Edge */
+      scrollbar-width: thin;  /* Firefox */
+    }
+    .carousel-container::-webkit-scrollbar {
+      height: 8px;
+    }
+    .carousel-container::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.1);
+      border-radius: 4px;
+    }
+    .carousel-container::-webkit-scrollbar-thumb {
+      background: var(--ink);
+      border-radius: 4px;
+    }
+    .carousel-item {
+      flex: 0 0 100%; /* Cada imagen ocupa el 100% del ancho del contenedor */
+      scroll-snap-align: start;
+    }
+    .carousel-item img {
+      width: 100%;
+      height: auto;
+      border: 3px solid var(--ink);
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+    .loader {
       text-align: center;
+      font-family: 'Patrick Hand', cursive;
+      color: var(--accent);
+      font-size: 1.5rem;
     }
-    .opt-btn.active {
-      border-color: var(--a);
-      background: #2e2c1f;
-      color: var(--a);
-      font-weight: 600;
-    }
-
-    /* Read mode */
-    body.read .side, body.read .side-r { display: none; }
-    body.read .ws { grid-template-columns: 1fr; }
-    body.read .canvas-scroll { background: #fef08a; }
   </style>
 </head>
 <body>
-  <!-- BARRA SUPERIOR -->
-  <div class="top">
-    <div class="brand">🐾 MALACATS // LAB STUDIO <span style="font-size: .8rem; font-family:'Inter'; color:#a1a1aa; font-weight:400;">v2.0 Vector Assets</span></div>
-    <div class="sw">
-      <button class="on" id="bLab" onclick="setMode('lab')">🧪 Laboratorio</button>
-      <button id="bRead" onclick="setMode('read')">📖 Vista Lector</button>
-    </div>
-    <div class="act">
-      <button class="pri" onclick="alert('¡Lista de recursos SVG cargada y lista!')">📸 Descargar Carrusel</button>
-    </div>
+
+  <div class="header">
+    <h1 class="brand">🐾 MALACATS COMICS</h1>
   </div>
 
-  <div class="ws">
-    <!-- PANEL IZQUIERDO: BIBLIOTECA MODULAR CON TABS -->
-    <div class="side">
-      <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('cats')">🐱 Gatos</button>
-        <button class="tab-btn" onclick="switchTab('gear')">🎛️ Gear</button>
-        <button class="tab-btn" onclick="switchTab('props')">🍗 Props</button>
-      </div>
-
-      <!-- TAB 1: GATOS Y GESTOS -->
-      <div id="tab-cats" class="tab-content active">
-        <h4>Pandorito (Siamés / Ojos cerrados)</h4>
-        <div class="lib-grid">
-          <!-- Pandorito Frustrado -->
-          <div class="lib-item" onclick="insertCat('pandorito-frustrado')">
-            <svg viewBox="0 0 100 100">
-              <circle cx="50" cy="55" r="30" fill="#ffffff" stroke="#18181b" stroke-width="3"></circle>
-              <!-- Orejas marrones/crema -->
-              <path d="M25 36 L30 14 L46 28 Z" fill="#b5927b" stroke="#18181b" stroke-width="3"></path>
-              <path d="M75 36 L70 14 L54 28 Z" fill="#b5927b" stroke="#18181b" stroke-width="3"></path>
-              <!-- Ojos frustrados > < -->
-              <path d="M34 50 L42 55 L34 60" fill="none" stroke="#18181b" stroke-width="3" stroke-linecap="round"></path>
-              <path d="M66 50 L58 55 L66 60" fill="none" stroke="#18181b" stroke-width="3" stroke-linecap="round"></path>
-              <!-- Naricita y boca -->
-              <polygon points="50,58 47,62 53,62" fill="#f472b6"></polygon>
-              <path d="M44 67 Q50 63 56 67" fill="none" stroke="#18181b" stroke-width="2.5" stroke-linecap="round"></path>
-              <!-- Collar azul liso sin cascabel -->
-              <rect x="28" y="80" width="44" height="6.5" rx="3" fill="#3b82f6" stroke="#18181b" stroke-width="2.5"></rect>
-            </svg>
-            <span>😣 Frustrado</span>
-          </div>
-
-          <!-- Pandorito Feliz Pollito -->
-          <div class="lib-item" onclick="insertCat('pandorito-feliz')">
-            <svg viewBox="0 0 100 100">
-              <circle cx="50" cy="55" r="30" fill="#ffffff" stroke="#18181b" stroke-width="3"></circle>
-              <path d="M25 36 L30 14 L46 28 Z" fill="#b5927b" stroke="#18181b" stroke-width="3"></path>
-              <path d="M75 36 L70 14 L54 28 Z" fill="#b5927b" stroke="#18181b" stroke-width="3"></path>
-              <!-- Ojos sonrientes ^ ^ -->
-              <path d="M34 55 Q42 47 48 55" fill="none" stroke="#18181b" stroke-width="3" stroke-linecap="round"></path>
-              <path d="M52 55 Q58 47 66 55" fill="none" stroke="#18181b" stroke-width="3" stroke-linecap="round"></path>
-              <!-- Mejillas rosas -->
-              <ellipse cx="33" cy="62" rx="4" ry="2.5" fill="#fbcfe8"></ellipse>
-              <ellipse cx="67" cy="62" rx="4" ry="2.5" fill="#fbcfe8"></ellipse>
-              <!-- Boquita alegre :3 -->
-              <path d="M45 63 Q50 67 55 63" fill="none" stroke="#18181b" stroke-width="2.5" stroke-linecap="round"></path>
-              <!-- Collar azul -->
-              <rect x="28" y="80" width="44" height="6.5" rx="3" fill="#3b82f6" stroke="#18181b" stroke-width="2.5"></rect>
-            </svg>
-            <span>😌 Feliz / Zen</span>
-          </div>
-        </div>
-
-        <h4>Ceniza (Carey / Lentes / Collar amarillo)</h4>
-        <div class="lib-grid">
-          <!-- Ceniza Juzgando -->
-          <div class="lib-item">
-            <svg viewBox="0 0 100 100">
-              <circle cx="50" cy="55" r="30" fill="#44352f" stroke="#18181b" stroke-width="3"></circle>
-              <!-- Mancha carey dorada -->
-              <path d="M30 40 Q45 35 40 55 Q30 50 30 40 Z" fill="#d97706"></path>
-              <!-- Orejas -->
-              <path d="M25 36 L30 14 L46 28 Z" fill="#44352f" stroke="#18181b" stroke-width="3"></path>
-              <path d="M75 36 L70 14 L54 28 Z" fill="#44352f" stroke="#18181b" stroke-width="3"></path>
-              <!-- Lentes de intelectual -->
-              <circle cx="39" cy="55" r="9" fill="#e0f2fe" fill-opacity="0.5" stroke="#18181b" stroke-width="2.5"></circle>
-              <circle cx="61" cy="55" r="9" fill="#e0f2fe" fill-opacity="0.5" stroke="#18181b" stroke-width="2.5"></circle>
-              <line x1="48" y1="55" x2="52" y2="55" stroke="#18181b" stroke-width="2.5"></line>
-              <!-- Ojos juzgando rectos detrás de los lentes -->
-              <line x1="33" y1="54" x2="43" y2="54" stroke="#18181b" stroke-width="3" stroke-linecap="round"></line>
-              <line x1="57" y1="54" x2="67" y2="54" stroke="#18181b" stroke-width="3" stroke-linecap="round"></line>
-              <!-- Collar amarillo -->
-              <rect x="28" y="80" width="44" height="6.5" rx="3" fill="#facc15" stroke="#18181b" stroke-width="2.5"></rect>
-            </svg>
-            <span>😒 Juzgando</span>
-          </div>
-
-          <!-- Ceniza Explicando / Sabia -->
-          <div class="lib-item">
-            <svg viewBox="0 0 100 100">
-              <circle cx="50" cy="55" r="30" fill="#44352f" stroke="#18181b" stroke-width="3"></circle>
-              <path d="M60 40 Q70 45 65 60 Q55 55 60 40 Z" fill="#d97706"></path>
-              <path d="M25 36 L30 14 L46 28 Z" fill="#44352f" stroke="#18181b" stroke-width="3"></path>
-              <path d="M75 36 L70 14 L54 28 Z" fill="#44352f" stroke="#18181b" stroke-width="3"></path>
-              <!-- Lentes circulares -->
-              <circle cx="39" cy="53" r="9" fill="#e0f2fe" fill-opacity="0.4" stroke="#18181b" stroke-width="2.5"></circle>
-              <circle cx="61" cy="53" r="9" fill="#e0f2fe" fill-opacity="0.4" stroke="#18181b" stroke-width="2.5"></circle>
-              <line x1="48" y1="53" x2="52" y2="53" stroke="#18181b" stroke-width="2.5"></line>
-              <circle cx="39" cy="53" r="3.5" fill="#18181b"></circle>
-              <circle cx="61" cy="53" r="3.5" fill="#18181b"></circle>
-              <!-- Patita arriba enseñando -->
-              <ellipse cx="22" cy="62" rx="7" ry="10" fill="#44352f" stroke="#18181b" stroke-width="2.5"></ellipse>
-              <!-- Collar amarillo -->
-              <rect x="28" y="80" width="44" height="6.5" rx="3" fill="#facc15" stroke="#18181b" stroke-width="2.5"></rect>
-            </svg>
-            <span>💡 Profe</span>
-          </div>
-        </div>
-
-        <h4>Bruna (Vaca blanquinegra / Collar flor)</h4>
-        <div class="lib-grid">
-          <!-- Bruna Inocente / Yo no fui -->
-          <div class="lib-item">
-            <svg viewBox="0 0 100 100">
-              <circle cx="50" cy="55" r="30" fill="#ffffff" stroke="#18181b" stroke-width="3"></circle>
-              <!-- Mancha negra de vaca en ojo izquierdo -->
-              <path d="M30 45 Q45 42 44 62 Q30 65 30 45 Z" fill="#18181b"></path>
-              <path d="M25 36 L30 14 L46 28 Z" fill="#18181b" stroke="#18181b" stroke-width="3"></path>
-              <path d="M75 36 L70 14 L54 28 Z" fill="#ffffff" stroke="#18181b" stroke-width="3"></path>
-              <!-- Ojos redondos mirando al cielo (silbando) -->
-              <circle cx="38" cy="52" r="4.5" fill="#ffffff"></circle>
-              <circle cx="62" cy="52" r="4.5" fill="#18181b"></circle>
-              <!-- Boquita redonda silbando "o" -->
-              <circle cx="50" cy="66" r="3" fill="none" stroke="#18181b" stroke-width="2.5"></circle>
-              <!-- Collar rosa con flor -->
-              <rect x="28" y="80" width="44" height="6.5" rx="3" fill="#f472b6" stroke="#18181b" stroke-width="2.5"></rect>
-              <circle cx="50" cy="83" r="5" fill="#fbbf24" stroke="#18181b" stroke-width="1.5"></circle>
-            </svg>
-            <span>🌸 Yo no fui</span>
-          </div>
-
-          <!-- Bruna Caos MIDI / Traviesa -->
-          <div class="lib-item">
-            <svg viewBox="0 0 100 100">
-              <circle cx="50" cy="55" r="30" fill="#ffffff" stroke="#18181b" stroke-width="3"></circle>
-              <path d="M60 40 Q75 42 70 65 Q58 60 60 40 Z" fill="#18181b"></path>
-              <path d="M25 36 L30 14 L46 28 Z" fill="#ffffff" stroke="#18181b" stroke-width="3"></path>
-              <path d="M75 36 L70 14 L54 28 Z" fill="#18181b" stroke="#18181b" stroke-width="3"></path>
-              <!-- Ojos de travesura máxima -->
-              <ellipse cx="38" cy="54" rx="6" ry="7" fill="#18181b"></ellipse>
-              <ellipse cx="62" cy="54" rx="6" ry="7" fill="#18181b"></ellipse>
-              <circle cx="40" cy="52" r="2" fill="#fff"></circle>
-              <circle cx="64" cy="52" r="2" fill="#fff"></circle>
-              <!-- Collar rosa con flor -->
-              <rect x="28" y="80" width="44" height="6.5" rx="3" fill="#f472b6" stroke="#18181b" stroke-width="2.5"></rect>
-              <circle cx="50" cy="83" r="5" fill="#fbbf24" stroke="#18181b" stroke-width="1.5"></circle>
-            </svg>
-            <span>😼 Traviesa</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB 2: HARDWARE & GEAR -->
-      <div id="tab-gear" class="tab-content">
-        <h4>Controladores &amp; Teclas</h4>
-        <div class="lib-grid">
-          <!-- Standalone Pad Controller -->
-          <div class="lib-item">
-            <svg viewBox="0 0 100 100">
-              <rect x="15" y="25" width="70" height="50" rx="4" fill="#27272a" stroke="#18181b" stroke-width="3"></rect>
-              <rect x="22" y="32" width="24" height="14" rx="2" fill="#38bdf8" stroke="#18181b" stroke-width="1.5"></rect>
-              <!-- Matriz de pads -->
-              <rect x="52" y="32" width="6" height="6" rx="1" fill="#f43f5e"></rect>
-              <rect x="61" y="32" width="6" height="6" rx="1" fill="#3b82f6"></rect>
-              <rect x="70" y="32" width="6" height="6" rx="1" fill="#eab308"></rect>
-              <rect x="52" y="40" width="6" height="6" rx="1" fill="#10b981"></rect>
-              <rect x="61" y="40" width="6" height="6" rx="1" fill="#a855f7"></rect>
-              <rect x="70" y="40" width="6" height="6" rx="1" fill="#f97316"></rect>
-              <rect x="22" y="54" width="54" height="15" rx="2" fill="#18181b"></rect>
-            </svg>
-            <span>🎛️ Controlador Grid</span>
-          </div>
-
-          <!-- Keytar / Mini Sintetizador -->
-          <div class="lib-item">
-            <svg viewBox="0 0 100 100">
-              <rect x="12" y="35" width="76" height="30" rx="5" fill="#f4f4f5" stroke="#18181b" stroke-width="3"></rect>
-              <!-- Teclas de piano -->
-              <rect x="18" y="42" width="9" height="20" fill="#fff" stroke="#18181b" stroke-width="1.5"></rect>
-              <rect x="27" y="42" width="9" height="20" fill="#fff" stroke="#18181b" stroke-width="1.5"></rect>
-              <rect x="36" y="42" width="9" height="20" fill="#fff" stroke="#18181b" stroke-width="1.5"></rect>
-              <rect x="45" y="42" width="9" height="20" fill="#fff" stroke="#18181b" stroke-width="1.5"></rect>
-              <rect x="24" y="42" width="5" height="11" fill="#18181b"></rect>
-              <rect x="33" y="42" width="5" height="11" fill="#18181b"></rect>
-              <circle cx="68" cy="50" r="4.5" fill="#3b82f6" stroke="#18181b" stroke-width="1.5"></circle>
-              <circle cx="78" cy="50" r="4.5" fill="#ef4444" stroke="#18181b" stroke-width="1.5"></circle>
-            </svg>
-            <span>🎹 Teclado / Keytar</span>
-          </div>
-
-          <!-- Cable MIDI DIN 5 Pines -->
-          <div class="lib-item">
-            <svg viewBox="0 0 100 100">
-              <path d="M20 70 Q 50 80 50 45 T 75 35" fill="none" stroke="#3f3f46" stroke-width="5" stroke-linecap="round"></path>
-              <circle cx="75" cy="35" r="14" fill="#a1a1aa" stroke="#18181b" stroke-width="3"></circle>
-              <circle cx="70" cy="30" r="2.5" fill="#18181b"></circle>
-              <circle cx="75" cy="27" r="2.5" fill="#18181b"></circle>
-              <circle cx="80" cy="30" r="2.5" fill="#18181b"></circle>
-              <circle cx="69" cy="37" r="2.5" fill="#18181b"></circle>
-              <circle cx="81" cy="37" r="2.5" fill="#18181b"></circle>
-            </svg>
-            <span>🔌 Conector MIDI 5-Pin</span>
-          </div>
-
-          <!-- Audífonos Studio -->
-          <div class="lib-item">
-            <svg viewBox="0 0 100 100">
-              <path d="M25 55 A 30 30 0 0 1 75 55" fill="none" stroke="#18181b" stroke-width="5" stroke-linecap="round"></path>
-              <rect x="18" y="50" width="12" height="22" rx="6" fill="#38bdf8" stroke="#18181b" stroke-width="3"></rect>
-              <rect x="70" y="50" width="12" height="22" rx="6" fill="#38bdf8" stroke="#18181b" stroke-width="3"></rect>
-            </svg>
-            <span>🎧 Audífonos Pro</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB 3: PROPS & SNACKS -->
-      <div id="tab-props" class="tab-content">
-        <h4>Snacks &amp; Motivación</h4>
-        <div class="lib-grid">
-          <!-- Lata de Atún -->
-          <div class="lib-item">
-            <svg viewBox="0 0 100 100">
-              <ellipse cx="50" cy="45" rx="30" ry="12" fill="#60a5fa" stroke="#18181b" stroke-width="3"></ellipse>
-              <rect x="20" y="45" width="60" height="22" fill="#3b82f6" stroke="#18181b" stroke-width="3"></rect>
-              <ellipse cx="50" cy="67" rx="30" ry="12" fill="#2563eb" stroke="#18181b" stroke-width="3"></ellipse>
-              <ellipse cx="50" cy="45" rx="24" ry="8" fill="#dbeafe" stroke="#18181b" stroke-width="1.5"></ellipse>
-              <text x="42" y="60" font-family="'Inter'" font-weight="700" font-size="12" fill="#fff">ATÚN</text>
-            </svg>
-            <span>🐟 Lata de Atún</span>
-          </div>
-
-          <!-- Piernita de Pollito -->
-          <div class="lib-item">
-            <svg viewBox="0 0 100 100">
-              <ellipse cx="44" cy="45" rx="22" ry="17" fill="#d97706" stroke="#18181b" stroke-width="3" transform="rotate(-20 44 45)"></ellipse>
-              <line x1="60" y1="52" x2="74" y2="62" stroke="#18181b" stroke-width="7" stroke-linecap="round"></line>
-              <circle cx="74" cy="62" r="5" fill="#f8fafc" stroke="#18181b" stroke-width="2.5"></circle>
-              <circle cx="79" cy="56" r="5" fill="#f8fafc" stroke="#18181b" stroke-width="2.5"></circle>
-            </svg>
-            <span>🍗 Pollito Rico</span>
-          </div>
-
-          <!-- Notas Musicales -->
-          <div class="lib-item">
-            <svg viewBox="0 0 100 100">
-              <text x="25" y="65" font-size="46" font-family="'Inter'" fill="#18181b">♫♪</text>
-            </svg>
-            <span>🎵 Notas Musicales</span>
-          </div>
-
-          <!-- Foco de Idea Brillante -->
-          <div class="lib-item">
-            <svg viewBox="0 0 100 100">
-              <circle cx="50" cy="42" r="18" fill="#fde047" stroke="#18181b" stroke-width="3"></circle>
-              <rect x="42" y="60" width="16" height="8" rx="2" fill="#94a3b8" stroke="#18181b" stroke-width="2"></rect>
-              <line x1="50" y1="16" x2="50" y2="10" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"></line>
-              <line x1="28" y1="24" x2="22" y2="18" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"></line>
-              <line x1="72" y1="24" x2="78" y2="18" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"></line>
-            </svg>
-            <span>💡 ¡Idea / Bombillo!</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ÁREA CENTRAL: LIENZO DE HISTORIETA -->
-    <div class="canvas-scroll">
-      <div class="comic-sheet">
-        <div class="comic-title" id="comicTitle">MALACATS: ATUNES</div>
-
-        <!-- VIÑETA 1 -->
-        <div class="panel" id="panel1" onclick="selectPanel(1)">
-          <div class="bubble L" id="bub1">¡No se me ocurre nada para producir! 😿</div>
-          <svg viewBox="0 0 400 175" style="width:100%; height:100%;">
-            <!-- Fondo suave de mesa -->
-            <line x1="0" y1="145" x2="400" y2="145" stroke="#18181b" stroke-width="3"></line>
-            <!-- Pandorito Frustrado frente a la mesa -->
-            <g transform="translate(70, 75)">
-              <circle cx="50" cy="55" r="32" fill="#ffffff" stroke="#18181b" stroke-width="3"></circle>
-              <path d="M25 36 L30 12 L46 28 Z" fill="#b5927b" stroke="#18181b" stroke-width="3"></path>
-              <path d="M75 36 L70 12 L54 28 Z" fill="#b5927b" stroke="#18181b" stroke-width="3"></path>
-              <path d="M34 50 L42 55 L34 60" fill="none" stroke="#18181b" stroke-width="3" stroke-linecap="round"></path>
-              <path d="M66 50 L58 55 L66 60" fill="none" stroke="#18181b" stroke-width="3" stroke-linecap="round"></path>
-              <polygon points="50,58 47,62 53,62" fill="#f472b6"></polygon>
-              <path d="M44 67 Q50 63 56 67" fill="none" stroke="#18181b" stroke-width="2.5" stroke-linecap="round"></path>
-              <rect x="28" y="81" width="44" height="6.5" rx="3" fill="#3b82f6" stroke="#18181b" stroke-width="2.5"></rect>
-            </g>
-            <!-- Sintetizador en la mesa con teclas -->
-            <g transform="translate(180, 115)">
-              <rect x="0" y="0" width="130" height="30" rx="4" fill="#27272a" stroke="#18181b" stroke-width="3"></rect>
-              <rect x="10" y="6" width="12" height="18" fill="#fff" stroke="#18181b" stroke-width="1.5"></rect>
-              <rect x="22" y="6" width="12" height="18" fill="#fff" stroke="#18181b" stroke-width="1.5"></rect>
-              <rect x="34" y="6" width="12" height="18" fill="#fff" stroke="#18181b" stroke-width="1.5"></rect>
-              <rect x="18" y="6" width="7" height="10" fill="#18181b"></rect>
-              <rect x="30" y="6" width="7" height="10" fill="#18181b"></rect>
-              <circle cx="65" cy="15" r="5" fill="#ef4444" stroke="#18181b" stroke-width="2"></circle>
-              <circle cx="82" cy="15" r="5" fill="#3b82f6" stroke="#18181b" stroke-width="2"></circle>
-              <circle cx="99" cy="15" r="5" fill="#facc15" stroke="#18181b" stroke-width="2"></circle>
-            </g>
-          </svg>
-        </div>
-
-        <!-- VIÑETA 2 -->
-        <div class="panel" id="panel2" onclick="selectPanel(2)">
-          <div class="bubble R" id="bub2">¡Prueba con atunes! 🐟</div>
-          <svg viewBox="0 0 400 175" style="width:100%; height:100%;">
-            <line x1="0" y1="145" x2="400" y2="145" stroke="#18181b" stroke-width="3"></line>
-            <!-- Pandorito escuchando a la izquierda -->
-            <g transform="translate(60, 75)">
-              <circle cx="50" cy="55" r="30" fill="#ffffff" stroke="#18181b" stroke-width="3"></circle>
-              <path d="M25 36 L30 14 L46 28 Z" fill="#b5927b" stroke="#18181b" stroke-width="3"></path>
-              <path d="M75 36 L70 14 L54 28 Z" fill="#b5927b" stroke="#18181b" stroke-width="3"></path>
-              <circle cx="42" cy="53" r="3.5" fill="#18181b"></circle>
-              <circle cx="58" cy="53" r="3.5" fill="#18181b"></circle>
-              <rect x="28" y="80" width="44" height="6.5" rx="3" fill="#3b82f6" stroke="#18181b" stroke-width="2.5"></rect>
-            </g>
-            <!-- Lata de atún en el centro -->
-            <g transform="translate(180, 115)">
-              <rect x="0" y="5" width="40" height="24" fill="#3b82f6" stroke="#18181b" stroke-width="2.5" rx="3"></rect>
-              <ellipse cx="20" cy="5" rx="20" ry="7" fill="#60a5fa" stroke="#18181b" stroke-width="2"></ellipse>
-              <text x="9" y="21" font-size="10" font-family="'Inter'" font-weight="700" fill="#fff">ATÚN</text>
-            </g>
-            <!-- Ceniza Juzgando / Aconsejando con lentes -->
-            <g transform="translate(260, 75)">
-              <circle cx="50" cy="55" r="30" fill="#44352f" stroke="#18181b" stroke-width="3"></circle>
-              <path d="M30 40 Q45 35 40 55 Q30 50 30 40 Z" fill="#d97706"></path>
-              <path d="M25 36 L30 14 L46 28 Z" fill="#44352f" stroke="#18181b" stroke-width="3"></path>
-              <path d="M75 36 L70 14 L54 28 Z" fill="#44352f" stroke="#18181b" stroke-width="3"></path>
-              <circle cx="39" cy="55" r="9" fill="#e0f2fe" fill-opacity="0.5" stroke="#18181b" stroke-width="2.5"></circle>
-              <circle cx="61" cy="55" r="9" fill="#e0f2fe" fill-opacity="0.5" stroke="#18181b" stroke-width="2.5"></circle>
-              <line x1="33" y1="54" x2="43" y2="54" stroke="#18181b" stroke-width="3" stroke-linecap="round"></line>
-              <line x1="57" y1="54" x2="67" y2="54" stroke="#18181b" stroke-width="3" stroke-linecap="round"></line>
-              <rect x="28" y="80" width="44" height="6.5" rx="3" fill="#facc15" stroke="#18181b" stroke-width="2.5"></rect>
-            </g>
-          </svg>
-        </div>
-
-        <!-- VIÑETA 3 -->
-        <div class="panel" id="panel3" onclick="selectPanel(3)">
-          <div class="bubble L" id="bub3">¡Puedes asignarle una nota a cada letra y partir desde ahí! 💡</div>
-          <svg viewBox="0 0 400 175" style="width:100%; height:100%;">
-            <!-- Fondo pizarrón / monitor musical -->
-            <rect x="50" y="55" width="300" height="80" rx="6" fill="#18181b" stroke="#18181b" stroke-width="3"></rect>
-            <text x="75" y="90" font-family="'Patrick Hand'" font-size="22" fill="#fde047">A - T - U - N - E - S</text>
-            <text x="75" y="118" font-family="'Inter'" font-weight="700" font-size="16" fill="#38bdf8">La - Do - Sol - Mi - Re</text>
-            <!-- Ceniza modo profe señalando -->
-            <g transform="translate(270, 75)">
-              <circle cx="50" cy="55" r="30" fill="#44352f" stroke="#18181b" stroke-width="3"></circle>
-              <path d="M60 40 Q70 45 65 60 Q55 55 60 40 Z" fill="#d97706"></path>
-              <path d="M25 36 L30 14 L46 28 Z" fill="#44352f" stroke="#18181b" stroke-width="3"></path>
-              <path d="M75 36 L70 14 L54 28 Z" fill="#44352f" stroke="#18181b" stroke-width="3"></path>
-              <circle cx="39" cy="53" r="8" fill="none" stroke="#18181b" stroke-width="2.5"></circle>
-              <circle cx="61" cy="53" r="8" fill="none" stroke="#18181b" stroke-width="2.5"></circle>
-              <line x1="47" y1="53" x2="53" y2="53" stroke="#18181b" stroke-width="2.5"></line>
-              <circle cx="39" cy="53" r="3" fill="#18181b"></circle>
-              <circle cx="61" cy="53" r="3" fill="#18181b"></circle>
-              <rect x="28" y="80" width="44" height="6.5" rx="3" fill="#facc15" stroke="#18181b" stroke-width="2.5"></rect>
-            </g>
-          </svg>
-        </div>
-
-        <!-- VIÑETA 4 -->
-        <div class="panel selected" id="panel4" onclick="selectPanel(4)">
-          <div class="bubble L" id="bub4">¡Mejor voy con 'pollito'! 🍗</div>
-          <svg viewBox="0 0 400 175" style="width:100%; height:100%;">
-            <line x1="0" y1="145" x2="400" y2="145" stroke="#18181b" stroke-width="3"></line>
-            <!-- Pandorito Feliz tocando beat con pierna de pollo -->
-            <g transform="translate(60, 75)">
-              <circle cx="50" cy="55" r="30" fill="#ffffff" stroke="#18181b" stroke-width="3"></circle>
-              <path d="M25 36 L30 14 L46 28 Z" fill="#b5927b" stroke="#18181b" stroke-width="3"></path>
-              <path d="M75 36 L70 14 L54 28 Z" fill="#b5927b" stroke="#18181b" stroke-width="3"></path>
-              <!-- Ojos felices ^ ^ -->
-              <path d="M34 55 Q42 47 48 55" fill="none" stroke="#18181b" stroke-width="3" stroke-linecap="round"></path>
-              <path d="M52 55 Q58 47 66 55" fill="none" stroke="#18181b" stroke-width="3" stroke-linecap="round"></path>
-              <rect x="28" y="80" width="44" height="6.5" rx="3" fill="#3b82f6" stroke="#18181b" stroke-width="2.5"></rect>
-            </g>
-            <!-- Grid de pads tocando música -->
-            <g transform="translate(160, 110)">
-              <rect x="0" y="0" width="75" height="35" rx="3" fill="#27272a" stroke="#18181b" stroke-width="2.5"></rect>
-              <rect x="6" y="6" width="12" height="10" rx="1" fill="#38bdf8"></rect>
-              <rect x="22" y="6" width="12" height="10" rx="1" fill="#f43f5e"></rect>
-              <rect x="38" y="6" width="12" height="10" rx="1" fill="#facc15"></rect>
-              <rect x="54" y="6" width="12" height="10" rx="1" fill="#10b981"></rect>
-              <text x="18" y="55" font-family="'Patrick Hand'" font-size="28" fill="#18181b">♫♪ ♫♪</text>
-            </g>
-            <!-- Ceniza mirándolo con desaprobación cómica -->
-            <g transform="translate(270, 75)">
-              <circle cx="50" cy="55" r="30" fill="#44352f" stroke="#18181b" stroke-width="3"></circle>
-              <path d="M30 40 Q45 35 40 55 Q30 50 30 40 Z" fill="#d97706"></path>
-              <path d="M25 36 L30 14 L46 28 Z" fill="#44352f" stroke="#18181b" stroke-width="3"></path>
-              <path d="M75 36 L70 14 L54 28 Z" fill="#44352f" stroke="#18181b" stroke-width="3"></path>
-              <circle cx="39" cy="55" r="9" fill="#e0f2fe" fill-opacity="0.5" stroke="#18181b" stroke-width="2.5"></circle>
-              <circle cx="61" cy="55" r="9" fill="#e0f2fe" fill-opacity="0.5" stroke="#18181b" stroke-width="2.5"></circle>
-              <line x1="33" y1="54" x2="43" y2="54" stroke="#18181b" stroke-width="3" stroke-linecap="round"></line>
-              <line x1="57" y1="54" x2="67" y2="54" stroke="#18181b" stroke-width="3" stroke-linecap="round"></line>
-              <rect x="28" y="80" width="44" height="6.5" rx="3" fill="#facc15" stroke="#18181b" stroke-width="2.5"></rect>
-            </g>
-          </svg>
-        </div>
-      </div>
-    </div>
-
-    <!-- PANEL DERECHO: INSPECTOR DE VIÑETA -->
-    <div class="side-r">
-      <h4 id="inspHeading">⚙️ Inspector: Viñeta #4</h4>
-      
-      <div class="inp-group">
-        <label>Título del Cómic</label>
-        <input class="inp" id="inpTitle" value="MALACATS: ATUNES" oninput="updateTitle(this.value)">
-      </div>
-
-      <div class="inp-group">
-        <label>Texto del Globo</label>
-        <input class="inp" id="inpBubble" value="¡Mejor voy con 'pollito'! 🍗" oninput="updateBubbleText(this.value)">
-      </div>
-
-      <div class="inp-group">
-        <label>Posición del Globo</label>
-        <div class="opt-grid">
-          <div class="opt-btn active" id="posL" onclick="setBubblePos('L')">💬 Izquierda</div>
-          <div class="opt-btn" id="posR" onclick="setBubblePos('R')">💬 Derecha</div>
-        </div>
-      </div>
-
-      <div class="inp-group">
-        <label>Viñeta Activa</label>
-        <div class="opt-grid">
-          <div class="opt-btn" onclick="selectPanel(1)">#1 Intro</div>
-          <div class="opt-btn" onclick="selectPanel(2)">#2 Atunes</div>
-          <div class="opt-btn" onclick="selectPanel(3)">#3 Tip Pro</div>
-          <div class="opt-btn active" onclick="selectPanel(4)">#4 Remate</div>
-        </div>
-      </div>
-    </div>
+  <div class="feed-container" id="feed">
+    <div class="loader" id="loader">Buscando nuevos cómics de Ceniza y Pandorito... 😸</div>
   </div>
 
   <script>
-    let activePanelIndex = 4;
+    // --- CONFIGURACIÓN IMPORTANTE ---
+    // Cambia esto por tu usuario y el nombre de tu repositorio
+    const githubUser = 'ernestomalaca'; 
+    const githubRepo = 'malacats';
+    const folderName = 'malacats';
+    
+    // URL de la API de GitHub para leer la carpeta
+    const apiUrl = `https://api.github.com/repos/${githubUser}/${githubRepo}/contents/${folderName}`;
 
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      event.target.classList.add('active');
-      document.getElementById('tab-' + tabId).classList.add('active');
-    }
+    async function loadComics() {
+      const feedContainer = document.getElementById('feed');
+      const loader = document.getElementById('loader');
 
-    function setMode(mode) {
-      if (mode === 'read') {
-        document.body.className = 'read';
-        document.getElementById('bRead').className = 'on';
-        document.getElementById('bLab').className = '';
-      } else {
-        document.body.className = '';
-        document.getElementById('bLab').className = 'on';
-        document.getElementById('bRead').className = '';
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error('No se pudo conectar con GitHub.');
+        
+        const files = await response.json();
+        
+        // Agrupar archivos por su nombre base (ej. tira1, tira2)
+        const comicsGrouped = {};
+
+        files.forEach(file => {
+          // Solo procesar jpg o png
+          if (file.name.match(/\.(jpe?g|png)$/i)) {
+            // Extraer el nombre base ignorando la letra final (a, b, c) y la extensión
+            // Ej: tira2a.jpg -> match[1] = "tira2"
+            const match = file.name.match(/^(tira\d+)[a-z]?\.(jpg|png|jpeg)$/i);
+            
+            if (match) {
+              const baseName = match[1].toLowerCase();
+              if (!comicsGrouped[baseName]) {
+                comicsGrouped[baseName] = [];
+              }
+              // Guardar la URL directa a la imagen
+              comicsGrouped[baseName].push({
+                name: file.name,
+                url: file.download_url
+              });
+            }
+          }
+        });
+
+        // Ordenar los grupos alfabéticamente (para que tira10 no salga antes que tira2 si no queremos, 
+        // aunque lo ideal es orden numérico inverso para que lo más nuevo salga arriba)
+        const sortedKeys = Object.keys(comicsGrouped).sort((a, b) => {
+          const numA = parseInt(a.replace('tira', ''));
+          const numB = parseInt(b.replace('tira', ''));
+          return numB - numA; // Orden descendente (más nuevos arriba)
+        });
+
+        loader.style.display = 'none';
+
+        // Construir el HTML
+        sortedKeys.forEach(key => {
+          const group = comicsGrouped[key];
+          
+          // Ordenar las imágenes dentro del grupo alfabéticamente (tira2a, tira2b...)
+          group.sort((a, b) => a.name.localeCompare(b.name));
+
+          const postEl = document.createElement('div');
+          postEl.className = 'comic-post';
+          
+          const titleEl = document.createElement('h2');
+          titleEl.className = 'post-title';
+          titleEl.innerText = key.toUpperCase(); // Ej: "TIRA 2"
+          postEl.appendChild(titleEl);
+
+          if (group.length === 1) {
+            // Tira única
+            const img = document.createElement('img');
+            img.src = group[0].url;
+            img.className = 'single-img';
+            postEl.appendChild(img);
+          } else {
+            // Carrusel
+            const carousel = document.createElement('div');
+            carousel.className = 'carousel-container';
+            
+            group.forEach(item => {
+              const slide = document.createElement('div');
+              slide.className = 'carousel-item';
+              const img = document.createElement('img');
+              img.src = item.url;
+              slide.appendChild(img);
+              carousel.appendChild(slide);
+            });
+            postEl.appendChild(carousel);
+          }
+
+          feedContainer.appendChild(postEl);
+        });
+
+        if (sortedKeys.length === 0) {
+          feedContainer.innerHTML = '<div class="loader">Aún no hay cómics en la carpeta 😿</div>';
+        }
+
+      } catch (error) {
+        loader.innerText = 'Oops! Hubo un error al cargar los cómics.';
+        console.error(error);
       }
     }
 
-    function selectPanel(index) {
-      activePanelIndex = index;
-      document.querySelectorAll('.panel').forEach((p, idx) => {
-        p.classList.toggle('selected', idx + 1 === index);
-      });
-      document.getElementById('inspHeading').innerText = `⚙️ Inspector: Viñeta #${index}`;
-      const currentBub = document.getElementById(`bub${index}`);
-      if (currentBub) {
-        document.getElementById('inpBubble').value = currentBub.innerText;
-        const isLeft = currentBub.classList.contains('L');
-        document.getElementById('posL').classList.toggle('active', isLeft);
-        document.getElementById('posR').classList.toggle('active', !isLeft);
-      }
-    }
-
-    function updateTitle(val) {
-      document.getElementById('comicTitle').innerText = val;
-    }
-
-    function updateBubbleText(val) {
-      const currentBub = document.getElementById(`bub${activePanelIndex}`);
-      if (currentBub) currentBub.innerText = val;
-    }
-
-    function setBubblePos(pos) {
-      const currentBub = document.getElementById(`bub${activePanelIndex}`);
-      if (!currentBub) return;
-      currentBub.className = `bubble ${pos}`;
-      document.getElementById('posL').classList.toggle('active', pos === 'L');
-      document.getElementById('posR').classList.toggle('active', pos === 'R');
-    }
-
-    function insertCat(type) {
-      console.log("Insertar recurso:", type, "en viñeta", activePanelIndex);
-    }
+    // Iniciar al cargar la página
+    document.addEventListener('DOMContentLoaded', loadComics);
   </script>
-
-
-</body></html>
+</body>
+</html>
