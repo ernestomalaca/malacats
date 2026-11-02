@@ -3,136 +3,148 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MALACATS // Cómic Feed</title>
-  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>MALACATS COMICS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #09090b;
-      --panel-dark: #18181b;
-      --border: #27272a;
+      --bg-dark: #18181b;
+      --card-bg: #fffdf2;
       --accent: #facc15;
-      --ink: #18181b;
-      --sheet-bg: #fef08a;
+      --ink: #27272a;
+      --text: #3f3f46;
     }
     body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg-dark);
-      color: #f4f4f5;
+      font-family: 'Quicksand', sans-serif;
+      background-color: var(--bg-dark);
+      background-image: radial-gradient(#3f3f46 2px, transparent 2px);
+      background-size: 24px 24px;
+      color: var(--ink);
       margin: 0;
       padding: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
+      min-height: 100vh;
     }
     .header {
       width: 100%;
-      background: var(--panel-dark);
-      border-bottom: 2px solid var(--border);
-      padding: 1rem;
+      background: rgba(24, 24, 27, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 3px solid var(--accent);
+      padding: 1.2rem 1rem;
       text-align: center;
       position: sticky;
       top: 0;
       z-index: 100;
+      box-sizing: border-box;
     }
     .brand {
       font-family: 'Patrick Hand', cursive;
-      font-size: 2rem;
+      font-size: 2.5rem;
       color: var(--accent);
       margin: 0;
+      letter-spacing: 2px;
+      text-shadow: 3px 3px 0px var(--ink);
     }
     .feed-container {
       width: 100%;
-      max-width: 600px; /* Tamaño ideal para simular el feed de móvil */
-      padding: 2rem 1rem;
+      max-width: 650px; 
+      padding: 3rem 1.5rem;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
-      gap: 3rem;
+      gap: 4rem; 
     }
     .comic-post {
-      background: var(--sheet-bg);
+      background: var(--card-bg);
       border: 4px solid var(--ink);
-      border-radius: 12px;
-      padding: 1rem;
-      box-shadow: 6px 6px 0 rgba(0,0,0,0.8);
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 10px 10px 0px var(--accent);
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
+      transition: transform 0.2s ease;
     }
-    .post-title {
-      font-family: 'Patrick Hand', cursive;
-      color: var(--ink);
-      font-size: 1.5rem;
-      margin: 0 0 0.5rem 0;
-      font-weight: 700;
-      text-transform: uppercase;
+    .comic-post:hover {
+      transform: translateY(-4px);
     }
-    /* Estilos para Tira Única */
     .single-img {
       width: 100%;
       height: auto;
       border: 3px solid var(--ink);
-      border-radius: 8px;
+      border-radius: 12px;
       box-sizing: border-box;
+      box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
     }
-    /* Estilos para Carrusel (Scroll Horizontal nativo) */
     .carousel-container {
       display: flex;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       gap: 1rem;
-      padding-bottom: 1rem; /* Espacio para la barra de scroll */
-      -ms-overflow-style: none;  /* IE y Edge */
-      scrollbar-width: thin;  /* Firefox */
+      padding-bottom: 1rem; 
+      -ms-overflow-style: none;  
+      scrollbar-width: thin;  
     }
-    .carousel-container::-webkit-scrollbar {
-      height: 8px;
-    }
+    .carousel-container::-webkit-scrollbar { height: 10px; }
     .carousel-container::-webkit-scrollbar-track {
-      background: rgba(0,0,0,0.1);
-      border-radius: 4px;
+      background: #f4f4f5;
+      border-radius: 8px;
+      border: 2px solid var(--ink);
     }
     .carousel-container::-webkit-scrollbar-thumb {
-      background: var(--ink);
-      border-radius: 4px;
+      background: var(--accent);
+      border-radius: 8px;
+      border: 2px solid var(--ink);
     }
     .carousel-item {
-      flex: 0 0 100%; /* Cada imagen ocupa el 100% del ancho del contenedor */
-      scroll-snap-align: start;
+      flex: 0 0 100%; 
+      scroll-snap-align: center;
     }
     .carousel-item img {
       width: 100%;
       height: auto;
       border: 3px solid var(--ink);
-      border-radius: 8px;
+      border-radius: 12px;
       box-sizing: border-box;
+      box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+    }
+    .swipe-hint {
+      font-size: 0.9rem;
+      color: #71717a;
+      font-weight: 700;
+      text-align: right;
+      margin-top: 0.5rem;
     }
     .loader {
       text-align: center;
       font-family: 'Patrick Hand', cursive;
-      color: var(--accent);
-      font-size: 1.5rem;
+      color: var(--card-bg);
+      font-size: 1.8rem;
+      padding: 3rem;
+      background: var(--ink);
+      border-radius: 16px;
+      border: 3px solid var(--accent);
     }
   </style>
 </head>
 <body>
 
   <div class="header">
-    <h1 class="brand">🐾 MALACATS COMICS</h1>
+    <h1 class="brand">🐾 MALACATS</h1>
   </div>
 
   <div class="feed-container" id="feed">
-    <div class="loader" id="loader">Buscando nuevos cómics de Ceniza y Pandorito... 😸</div>
+    <div class="loader" id="loader">Buscando en el estudio... 🎹🐾</div>
   </div>
 
   <script>
-    // --- CONFIGURACIÓN IMPORTANTE ---
-    // Cambia esto por tu usuario y el nombre de tu repositorio
+    // --- CONFIGURACIÓN ---
     const githubUser = 'ernestomalaca'; 
     const githubRepo = 'malacats';
-    const folderName = 'malacats';
+    const folderName = 'malacats'; 
     
-    // URL de la API de GitHub para leer la carpeta
     const apiUrl = `https://api.github.com/repos/${githubUser}/${githubRepo}/contents/${folderName}`;
 
     async function loadComics() {
@@ -144,23 +156,16 @@
         if (!response.ok) throw new Error('No se pudo conectar con GitHub.');
         
         const files = await response.json();
-        
-        // Agrupar archivos por su nombre base (ej. tira1, tira2)
         const comicsGrouped = {};
 
         files.forEach(file => {
-          // Solo procesar jpg o png
           if (file.name.match(/\.(jpe?g|png)$/i)) {
-            // Extraer el nombre base ignorando la letra final (a, b, c) y la extensión
-            // Ej: tira2a.jpg -> match[1] = "tira2"
             const match = file.name.match(/^(tira\d+)[a-z]?\.(jpg|png|jpeg)$/i);
-            
             if (match) {
               const baseName = match[1].toLowerCase();
               if (!comicsGrouped[baseName]) {
                 comicsGrouped[baseName] = [];
               }
-              // Guardar la URL directa a la imagen
               comicsGrouped[baseName].push({
                 name: file.name,
                 url: file.download_url
@@ -169,36 +174,28 @@
           }
         });
 
-        // Ordenar los grupos alfabéticamente (para que tira10 no salga antes que tira2 si no queremos, 
-        // aunque lo ideal es orden numérico inverso para que lo más nuevo salga arriba)
+        // Ordenar descendentemente
         const sortedKeys = Object.keys(comicsGrouped).sort((a, b) => {
           const numA = parseInt(a.replace('tira', ''));
           const numB = parseInt(b.replace('tira', ''));
-          return numB - numA; // Orden descendente (más nuevos arriba)
+          return numB - numA; 
         });
 
         loader.style.display = 'none';
 
-        // Construir el HTML
         sortedKeys.forEach(key => {
           const group = comicsGrouped[key];
-          
-          // Ordenar las imágenes dentro del grupo alfabéticamente (tira2a, tira2b...)
           group.sort((a, b) => a.name.localeCompare(b.name));
 
           const postEl = document.createElement('div');
           postEl.className = 'comic-post';
-          
-          const titleEl = document.createElement('h2');
-          titleEl.className = 'post-title';
-          titleEl.innerText = key.toUpperCase(); // Ej: "TIRA 2"
-          postEl.appendChild(titleEl);
 
           if (group.length === 1) {
-            // Tira única
+            // Tira única (sin título repetitivo, solo la imagen)
             const img = document.createElement('img');
             img.src = group[0].url;
             img.className = 'single-img';
+            img.loading = "lazy";
             postEl.appendChild(img);
           } else {
             // Carrusel
@@ -210,10 +207,16 @@
               slide.className = 'carousel-item';
               const img = document.createElement('img');
               img.src = item.url;
+              img.loading = "lazy";
               slide.appendChild(img);
               carousel.appendChild(slide);
             });
             postEl.appendChild(carousel);
+            
+            const hintEl = document.createElement('div');
+            hintEl.className = 'swipe-hint';
+            hintEl.innerText = 'Desliza para leer 👉';
+            postEl.appendChild(hintEl);
           }
 
           feedContainer.appendChild(postEl);
@@ -229,7 +232,6 @@
       }
     }
 
-    // Iniciar al cargar la página
     document.addEventListener('DOMContentLoaded', loadComics);
   </script>
 </body>
