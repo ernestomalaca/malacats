@@ -76,7 +76,7 @@
       flex-direction: column;
       gap: 0.5rem;
       transition: transform 0.2s ease;
-      scroll-margin-top: 100px; /* Para que al autodeslizar no quede tapado por el menú de arriba */
+      scroll-margin-top: 100px;
     }
     
     .comic-post:hover {
@@ -148,7 +148,6 @@
       transform: scale(1.3); 
     }
     
-    /* NUEVOS ESTILOS PARA LOS DOS BOTONES */
     .action-buttons {
       display: flex;
       gap: 10px;
@@ -156,7 +155,7 @@
     }
 
     .action-btn {
-      flex: 1; /* Hace que ambos botones midan exactamente lo mismo */
+      flex: 1; 
       background: var(--accent);
       color: var(--ink);
       font-family: 'Quicksand', sans-serif;
@@ -187,20 +186,22 @@
     }
 
     .action-btn.secondary {
-      background: var(--card-bg); /* Botón blanco para compartir */
+      background: var(--card-bg); 
     }
 
+    /* EL FIX ESTÁ AQUÍ: Escondemos el cuadro justo detrás del original para no trabar el celular */
     .ig-export-frame {
       position: fixed;
-      top: -9999px;
-      left: -9999px;
+      top: 0;
+      left: 0;
       width: 480px;
       padding: 2.5rem; 
       background-color: var(--bg-light);
       background-image: radial-gradient(var(--pattern-dots) 2.5px, transparent 2.5px);
       background-size: 24px 24px;
       box-sizing: border-box;
-      z-index: -1;
+      z-index: -9999;
+      pointer-events: none;
     }
     
     .export-post {
@@ -237,10 +238,8 @@
     
     const apiUrl = `https://api.github.com/repos/${githubUser}/${githubRepo}/contents/${folderName}`;
 
-    // Lógica para exportar imágenes a IG
     async function exportToIG(key, group, btn) {
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '⏳ Procesando...';
+        btn.innerHTML = '⏳ Procesando (no cierres)...';
         btn.disabled = true;
 
         for (let i = 0; i < group.length; i++) {
@@ -288,20 +287,30 @@
                 img.src = group[i].url; 
                 
                 if (img.complete) finish();
-                setTimeout(finish, 4000); 
+                setTimeout(finish, 3000); 
             });
 
+            // Le damos tiempo al navegador para que dibuje el cuadro internamente
+            await new Promise(r => setTimeout(r, 200)); 
+
             try {
-                const renderScale = window.innerWidth < 768 ? 2 : 3;
+                // Fix de RAM: Baja ligeramente el tamaño en celulares para que no crashee, pero sigue siendo HD
+                const renderScale = window.innerWidth < 768 ? 1.5 : 3;
+                
                 const canvas = await html2canvas(frame, {
                     scale: renderScale, 
                     useCORS: true,
-                    backgroundColor: '#fefce8'
+                    backgroundColor: '#fefce8',
+                    logging: false,
+                    x: 0,
+                    y: 0,
+                    width: frame.offsetWidth,
+                    height: frame.offsetHeight
                 });
 
                 const link = document.createElement('a');
                 link.download = `Malacats_${key.toUpperCase()}_V${i + 1}.png`;
-                link.href = canvas.toDataURL('image/png');
+                link.href = canvas.toDataURL('image/png', 1.0);
                 link.click();
             } catch (e) {
                 console.error("Error al exportar", e);
@@ -309,24 +318,22 @@
 
             document.body.removeChild(frame);
 
+            // Fix de RAM: 1.5 segundos de pausa para dejar respirar la memoria del celular
             if (i < group.length - 1) {
-                await new Promise(r => setTimeout(r, 1000));
+                await new Promise(r => setTimeout(r, 1500));
             }
         }
 
         btn.innerHTML = '✅ ¡Guardado!';
         setTimeout(() => {
-            btn.innerHTML = originalText;
+            btn.innerHTML = '🐾 Descargar';
             btn.disabled = false;
         }, 3000);
     }
 
-    // Lógica para Copiar el Enlace
     function copyLink(key, btn) {
-        // Armamos la URL exacta hacia la tira (ej. malacats.malacamusiclab.com/#tira2)
         const url = window.location.origin + window.location.pathname + '#' + key;
         
-        // Función a prueba de balas para copiar (compatible con HTTPS y móviles)
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(url).then(() => showCopiedSuccess(btn));
         } else {
@@ -341,10 +348,9 @@
     }
 
     function showCopiedSuccess(btn) {
-        const originalText = btn.innerHTML;
         btn.innerHTML = '✅ ¡Copiado!';
         setTimeout(() => {
-            btn.innerHTML = originalText;
+            btn.innerHTML = '🔗 Compartir';
         }, 2000);
     }
 
@@ -389,7 +395,6 @@
 
           const postEl = document.createElement('div');
           postEl.className = 'comic-post';
-          // Asignamos el ID a la tarjeta para que el link directo sepa a dónde brincar
           postEl.id = key; 
 
           if (group.length === 1) {
@@ -447,20 +452,18 @@
             });
           }
 
-          // CONTENEDOR DE BOTONES
           const actionsContainer = document.createElement('div');
           actionsContainer.className = 'action-buttons';
 
-          // Botón 1: Compartir (Blanco)
           const shareBtn = document.createElement('button');
           shareBtn.className = 'action-btn secondary';
           shareBtn.innerHTML = '🔗 Compartir';
           shareBtn.onclick = () => copyLink(key, shareBtn);
           
-          // Botón 2: Descargar (Amarillo)
           const downloadBtn = document.createElement('button');
           downloadBtn.className = 'action-btn';
-          downloadBtn.innerHTML = '📸 Para IG';
+          // AQUÍ CAMBIAMOS EL TEXTO
+          downloadBtn.innerHTML = '🐾 Descargar';
           downloadBtn.onclick = () => exportToIG(key, group, downloadBtn);
 
           actionsContainer.appendChild(shareBtn);
@@ -474,15 +477,13 @@
           feedContainer.innerHTML = '<div class="loader">Aún no hay cómics en la carpeta 😿</div>';
         }
 
-        // LÓGICA DE AUTO-SCROLL
-        // Si alguien entra mediante un link compartido (ej. #tira2), deslizamos la pantalla hasta esa tira.
         if (window.location.hash) {
             const targetId = window.location.hash.substring(1);
             const targetElement = document.getElementById(targetId);
             if (targetElement) {
                 setTimeout(() => {
                     targetElement.scrollIntoView({ behavior: 'smooth' });
-                }, 500); // Pequeña pausa para asegurar que las imágenes se dibujaron
+                }, 500); 
             }
         }
 
