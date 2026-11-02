@@ -1,9 +1,11 @@
-<!DOCTYPE html>
-<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MALACATS COMICS</title>
+  
+  <!-- Favicon Mágico (Patita Sanrio-style generada en código) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23facc15' stroke='%2318181b' stroke-width='1.5' stroke-linejoin='round'><path d='M12 12.5c-2.5 0-4.5 2-4.5 4.5 0 2.5 2 4.5 4.5 4.5s4.5-2 4.5-4.5c0-2.5-2-4.5-4.5-4.5zm-5-2c1.93 0 3.5-1.57 3.5-3.5S8.93 3.5 7 3.5 3.5 5.07 3.5 7 5.07 10.5 7 10.5zm10 0c1.93 0 3.5-1.57 3.5-3.5S18.93 3.5 17 3.5 13.5 5.07 13.5 7 15.07 10.5 17 10.5zm-12.5 7c1.93 0 3.5-1.57 3.5-3.5S6.43 8.5 4.5 8.5 1 10.07 1 12 2.57 15.5 4.5 15.5zm15 0c1.93 0 3.5-1.57 3.5-3.5s-1.57-3.5-3.5-3.5-3.5 1.57-3.5 3.5 1.57 3.5 3.5 3.5z'/></svg>">
+
   <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -129,110 +131,3 @@
     }
   </style>
 </head>
-<body>
-
-  <div class="header">
-    <h1 class="brand">🐾 MALACATS</h1>
-  </div>
-
-  <div class="feed-container" id="feed">
-    <div class="loader" id="loader">Buscando en el estudio... 🎹🐾</div>
-  </div>
-
-  <script>
-    // --- CONFIGURACIÓN ---
-    const githubUser = 'ernestomalaca'; 
-    const githubRepo = 'malacats';
-    const folderName = 'malacats'; 
-    
-    const apiUrl = `https://api.github.com/repos/${githubUser}/${githubRepo}/contents/${folderName}`;
-
-    async function loadComics() {
-      const feedContainer = document.getElementById('feed');
-      const loader = document.getElementById('loader');
-
-      try {
-        const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error('No se pudo conectar con GitHub.');
-        
-        const files = await response.json();
-        const comicsGrouped = {};
-
-        files.forEach(file => {
-          if (file.name.match(/\.(jpe?g|png)$/i)) {
-            const match = file.name.match(/^(tira\d+)[a-z]?\.(jpg|png|jpeg)$/i);
-            if (match) {
-              const baseName = match[1].toLowerCase();
-              if (!comicsGrouped[baseName]) {
-                comicsGrouped[baseName] = [];
-              }
-              comicsGrouped[baseName].push({
-                name: file.name,
-                url: file.download_url
-              });
-            }
-          }
-        });
-
-        // Ordenar descendentemente
-        const sortedKeys = Object.keys(comicsGrouped).sort((a, b) => {
-          const numA = parseInt(a.replace('tira', ''));
-          const numB = parseInt(b.replace('tira', ''));
-          return numB - numA; 
-        });
-
-        loader.style.display = 'none';
-
-        sortedKeys.forEach(key => {
-          const group = comicsGrouped[key];
-          group.sort((a, b) => a.name.localeCompare(b.name));
-
-          const postEl = document.createElement('div');
-          postEl.className = 'comic-post';
-
-          if (group.length === 1) {
-            // Tira única (sin título repetitivo, solo la imagen)
-            const img = document.createElement('img');
-            img.src = group[0].url;
-            img.className = 'single-img';
-            img.loading = "lazy";
-            postEl.appendChild(img);
-          } else {
-            // Carrusel
-            const carousel = document.createElement('div');
-            carousel.className = 'carousel-container';
-            
-            group.forEach(item => {
-              const slide = document.createElement('div');
-              slide.className = 'carousel-item';
-              const img = document.createElement('img');
-              img.src = item.url;
-              img.loading = "lazy";
-              slide.appendChild(img);
-              carousel.appendChild(slide);
-            });
-            postEl.appendChild(carousel);
-            
-            const hintEl = document.createElement('div');
-            hintEl.className = 'swipe-hint';
-            hintEl.innerText = 'Desliza para leer 👉';
-            postEl.appendChild(hintEl);
-          }
-
-          feedContainer.appendChild(postEl);
-        });
-
-        if (sortedKeys.length === 0) {
-          feedContainer.innerHTML = '<div class="loader">Aún no hay cómics en la carpeta 😿</div>';
-        }
-
-      } catch (error) {
-        loader.innerText = 'Oops! Hubo un error al cargar los cómics.';
-        console.error(error);
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', loadComics);
-  </script>
-</body>
-</html>
