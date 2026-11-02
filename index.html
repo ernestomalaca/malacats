@@ -35,16 +35,15 @@
     
     .header {
       width: 100%;
-      background: rgba(254, 252, 232, 0.85); 
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-bottom: 3px solid var(--ink);
+      background: var(--ink); /* Fondo oscuro como la sombra de las tarjetas */
+      border-bottom: 4px solid var(--accent); /* Borde amarillo para dar contraste */
       padding: 1.2rem 1rem;
       text-align: center;
       position: sticky;
       top: 0;
       z-index: 100;
       box-sizing: border-box;
+      box-shadow: 0px 4px 0px rgba(0,0,0,0.1);
     }
     
     .brand {
@@ -53,7 +52,7 @@
       color: var(--accent);
       margin: 0;
       letter-spacing: 2px;
-      text-shadow: 3px 3px 0px var(--ink);
+      text-shadow: 3px 3px 0px #000000; /* Sombra negra pura para resaltar sobre el fondo oscuro */
     }
     
     .feed-container {
@@ -98,10 +97,9 @@
       gap: 1rem;
       padding-bottom: 0.5rem; 
       -ms-overflow-style: none;  
-      scrollbar-width: none; /* Ocultamos la barra de scroll ahora que tenemos puntitos */
+      scrollbar-width: none; 
     }
     
-    /* Ocultar barra de scroll en Chrome/Safari */
     .carousel-container::-webkit-scrollbar { 
       display: none; 
     }
@@ -120,7 +118,6 @@
       background-color: #fff;
     }
     
-    /* NUEVO: Contenedor y diseño de los puntitos */
     .dots-container {
       display: flex;
       justify-content: center;
@@ -134,14 +131,14 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background-color: #f4f4f5; /* Color gris muy claro inactivo */
+      background-color: #f4f4f5; 
       border: 2px solid var(--ink);
       transition: all 0.3s ease;
     }
 
     .dot.active {
       background-color: var(--accent);
-      transform: scale(1.3); /* Crece un poquito cuando está activo */
+      transform: scale(1.3); 
     }
     
     .loader {
@@ -225,10 +222,9 @@
             const carousel = document.createElement('div');
             carousel.className = 'carousel-container';
             
-            // Contenedor para los puntitos
             const dotsContainer = document.createElement('div');
             dotsContainer.className = 'dots-container';
-            const dotsArray = []; // Para guardar las referencias a los puntitos
+            const dotsArray = []; 
             
             group.forEach((item, index) => {
               const slide = document.createElement('div');
@@ -239,10 +235,8 @@
               slide.appendChild(img);
               carousel.appendChild(slide);
 
-              // Crear un puntito por cada imagen
               const dot = document.createElement('div');
               dot.className = 'dot';
-              // El primer puntito siempre inicia activo
               if (index === 0) dot.classList.add('active'); 
               dotsContainer.appendChild(dot);
               dotsArray.push(dot);
@@ -251,14 +245,11 @@
             postEl.appendChild(carousel);
             postEl.appendChild(dotsContainer);
 
-            // Lógica para iluminar el puntito correcto al deslizar
             carousel.addEventListener('scroll', () => {
-              // Calculamos en qué slide estamos basándonos en cuánto se ha desplazado el scroll
               const scrollPosition = carousel.scrollLeft;
               const slideWidth = carousel.clientWidth;
               const activeIndex = Math.round(scrollPosition / slideWidth);
 
-              // Actualizamos las clases de los puntitos
               dotsArray.forEach((dot, index) => {
                 if (index === activeIndex) {
                   dot.classList.add('active');
