@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -131,3 +133,111 @@
     }
   </style>
 </head>
+
+<body>
+
+  <div class="header">
+    <h1 class="brand">🐾 MALACATS</h1>
+  </div>
+
+  <div class="feed-container" id="feed">
+    <div class="loader" id="loader">Buscando en el estudio... 🎹🐾</div>
+  </div>
+
+  <script>
+    // --- CONFIGURACIÓN ---
+    const githubUser = 'ernestomalaca'; 
+    const githubRepo = 'malacats';
+    const folderName = 'malacats'; 
+    
+    const apiUrl = `https://api.github.com/repos/${githubUser}/${githubRepo}/contents/${folderName}`;
+
+    async function loadComics() {
+      const feedContainer = document.getElementById('feed');
+      const loader = document.getElementById('loader');
+
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error('No se pudo conectar con GitHub.');
+        
+        const files = await response.json();
+        const comicsGrouped = {};
+
+        files.forEach(file => {
+          if (file.name.match(/\.(jpe?g|png)$/i)) {
+            const match = file.name.match(/^(tira\d+)[a-z]?\.(jpg|png|jpeg)$/i);
+            if (match) {
+              const baseName = match[1].toLowerCase();
+              if (!comicsGrouped[baseName]) {
+                comicsGrouped[baseName] = [];
+              }
+              comicsGrouped[baseName].push({
+                name: file.name,
+                url: file.download_url
+              });
+            }
+          }
+        });
+
+        // Ordenar descendentemente
+        const sortedKeys = Object.keys(comicsGrouped).sort((a, b) => {
+          const numA = parseInt(a.replace('tira', ''));
+          const numB = parseInt(b.replace('tira', ''));
+          return numB - numA; 
+        });
+
+        loader.style.display = 'none';
+
+        sortedKeys.forEach(key => {
+          const group = comicsGrouped[key];
+          group.sort((a, b) => a.name.localeCompare(b.name));
+
+          const postEl = document.createElement('div');
+          postEl.className = 'comic-post';
+
+          if (group.length === 1) {
+            // Tira única (sin título repetitivo, solo la imagen)
+            const img = document.createElement('img');
+            img.src = group[0].url;
+            img.className = 'single-img';
+            img.loading = "lazy";
+            postEl.appendChild(img);
+          } else {
+            // Carrusel
+            const carousel = document.createElement('div');
+            carousel.className = 'carousel-container';
+            
+            group.forEach(item => {
+              const slide = document.createElement('div');
+              slide.className = 'carousel-item';
+              const img = document.createElement('img');
+              img.src = item.url;
+              img.loading = "lazy";
+              slide.appendChild(img);
+              carousel.appendChild(slide);
+            });
+            postEl.appendChild(carousel);
+            
+            const hintEl = document.createElement('div');
+            hintEl.className = 'swipe-hint';
+            hintEl.innerText = 'Desliza para leer 👉';
+            postEl.appendChild(hintEl);
+          }
+
+          feedContainer.appendChild(postEl);
+        });
+
+        if (sortedKeys.length === 0) {
+          feedContainer.innerHTML = '<div class="loader">Aún no hay cómics en la carpeta 😿</div>';
+        }
+
+      } catch (error) {
+        loader.innerText = 'Oops! Hubo un error al cargar los cómics.';
+        console.error(error);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadComics);
+  </script>
+</body>
+</html>
