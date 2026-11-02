@@ -81,16 +81,20 @@
       transform: translateY(-4px);
     }
     
-    /* FIX: display: block y object-fit protegen la proporción de la imagen */
+    /* El contenedor invisible que salva el día */
+    .single-img-wrapper {
+      width: 100%;
+      display: block;
+    }
+
+    /* Imagen pura y responsiva, sin object-fit */
     .single-img {
       width: 100%;
       height: auto;
       display: block;
-      object-fit: contain;
       border: 3px solid var(--ink);
       border-radius: 12px;
       box-sizing: border-box;
-      background-color: #fff;
     }
     
     .carousel-container {
@@ -112,16 +116,13 @@
       scroll-snap-align: center;
     }
     
-    /* FIX aplicado también al carrusel por seguridad */
     .carousel-item img {
       width: 100%;
       height: auto;
       display: block;
-      object-fit: contain;
       border: 3px solid var(--ink);
       border-radius: 12px;
       box-sizing: border-box;
-      background-color: #fff;
     }
     
     .dots-container {
@@ -219,11 +220,17 @@
           postEl.className = 'comic-post';
 
           if (group.length === 1) {
+            // AQUÍ ESTÁ LA MAGIA: Envolvemos la imagen única en su propio div
+            const wrapper = document.createElement('div');
+            wrapper.className = 'single-img-wrapper';
+
             const img = document.createElement('img');
             img.src = group[0].url;
             img.className = 'single-img';
             img.loading = "lazy";
-            postEl.appendChild(img);
+
+            wrapper.appendChild(img);
+            postEl.appendChild(wrapper);
           } else {
             const carousel = document.createElement('div');
             carousel.className = 'carousel-container';
