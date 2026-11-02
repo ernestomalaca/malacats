@@ -35,8 +35,8 @@
     
     .header {
       width: 100%;
-      background: var(--ink); /* Fondo oscuro como la sombra de las tarjetas */
-      border-bottom: 4px solid var(--accent); /* Borde amarillo para dar contraste */
+      background: var(--ink); 
+      border-bottom: 4px solid var(--accent); 
       padding: 1.2rem 1rem;
       text-align: center;
       position: sticky;
@@ -52,7 +52,7 @@
       color: var(--accent);
       margin: 0;
       letter-spacing: 2px;
-      text-shadow: 3px 3px 0px #000000; /* Sombra negra pura para resaltar sobre el fondo oscuro */
+      text-shadow: 3px 3px 0px #000000; 
     }
     
     .feed-container {
@@ -81,9 +81,12 @@
       transform: translateY(-4px);
     }
     
+    /* FIX: display: block y object-fit protegen la proporción de la imagen */
     .single-img {
       width: 100%;
       height: auto;
+      display: block;
+      object-fit: contain;
       border: 3px solid var(--ink);
       border-radius: 12px;
       box-sizing: border-box;
@@ -109,9 +112,12 @@
       scroll-snap-align: center;
     }
     
+    /* FIX aplicado también al carrusel por seguridad */
     .carousel-item img {
       width: 100%;
       height: auto;
+      display: block;
+      object-fit: contain;
       border: 3px solid var(--ink);
       border-radius: 12px;
       box-sizing: border-box;
