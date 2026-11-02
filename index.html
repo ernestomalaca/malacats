@@ -9,6 +9,10 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23facc15' stroke='%2318181b' stroke-width='1.5' stroke-linejoin='round'><path d='M12 12.5c-2.5 0-4.5 2-4.5 4.5 0 2.5 2 4.5 4.5 4.5s4.5-2 4.5-4.5c0-2.5-2-4.5-4.5-4.5zm-5-2c1.93 0 3.5-1.57 3.5-3.5S8.93 3.5 7 3.5 3.5 5.07 3.5 7 5.07 10.5 7 10.5zm10 0c1.93 0 3.5-1.57 3.5-3.5S18.93 3.5 17 3.5 13.5 5.07 13.5 7 15.07 10.5 17 10.5zm-12.5 7c1.93 0 3.5-1.57 3.5-3.5S6.43 8.5 4.5 8.5 1 10.07 1 12 2.57 15.5 4.5 15.5zm15 0c1.93 0 3.5-1.57 3.5-3.5s-1.57-3.5-3.5-3.5-3.5 1.57-3.5 3.5 1.57 3.5 3.5 3.5z'/></svg>">
 
   <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Librería para tomar los "Screenshots" automáticos -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
   <style>
     :root {
       --bg-light: #fefce8;     
@@ -81,13 +85,11 @@
       transform: translateY(-4px);
     }
     
-    /* El contenedor invisible que salva el día */
     .single-img-wrapper {
       width: 100%;
       display: block;
     }
 
-    /* Imagen pura y responsiva, sin object-fit */
     .single-img {
       width: 100%;
       height: auto;
@@ -148,6 +150,54 @@
       transform: scale(1.3); 
     }
     
+    /* BOTÓN DE DESCARGA */
+    .download-btn {
+      margin-top: 0.5rem;
+      background: var(--accent);
+      color: var(--ink);
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      border: 3px solid var(--ink);
+      border-radius: 12px;
+      padding: 0.8rem;
+      cursor: pointer;
+      box-shadow: 4px 4px 0px var(--ink);
+      transition: transform 0.1s, box-shadow 0.1s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+    .download-btn:active {
+      transform: translate(4px, 4px);
+      box-shadow: 0px 0px 0px var(--ink);
+    }
+    .download-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: translate(4px, 4px);
+      box-shadow: 0px 0px 0px var(--ink);
+    }
+
+    /* CONTENEDOR FANTASMA PARA LA CAPTURA (Se genera y oculta fuera de pantalla) */
+    .ig-export-frame {
+      position: fixed;
+      top: -9999px;
+      left: -9999px;
+      width: 480px;
+      padding: 2.5rem; 
+      background-color: var(--bg-light);
+      background-image: radial-gradient(var(--pattern-dots) 2.5px, transparent 2.5px);
+      background-size: 24px 24px;
+      box-sizing: border-box;
+      z-index: -1;
+    }
+    .export-post {
+      transform: none !important; 
+      box-shadow: 8px 8px 0px var(--ink) !important;
+    }
+
     .loader {
       text-align: center;
       font-family: 'Patrick Hand', cursive;
@@ -176,6 +226,85 @@
     const folderName = 'malacats'; 
     
     const apiUrl = `https://api.github.com/repos/${githubUser}/${githubRepo}/contents/${folderName}`;
+
+    // Función que hace la magia de tomar la foto para IG
+    async function exportToIG(key, group, btn) {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Preparando imágenes...';
+        btn.disabled = true;
+
+        for (let i = 0; i < group.length; i++) {
+            // Creamos un marco fantasma con el fondo de puntitos amarillos
+            const frame = document.createElement('div');
+            frame.className = 'ig-export-frame';
+
+            // Recreamos la tarjeta blanca
+            const post = document.createElement('div');
+            post.className = 'comic-post export-post';
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'single-img-wrapper';
+
+            const img = new Image();
+            img.crossOrigin = "anonymous"; // Vital para que GitHub permita descargar la imagen
+            img.className = 'single-img';
+            img.src = group[i].url;
+
+            wrapper.appendChild(img);
+            post.appendChild(wrapper);
+
+            // Recreamos los puntitos de navegación indicando la viñeta actual
+            if (group.length > 1) {
+                const dotsContainer = document.createElement('div');
+                dotsContainer.className = 'dots-container';
+                for (let j = 0; j < group.length; j++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot' + (j === i ? ' active' : '');
+                    dotsContainer.appendChild(dot);
+                }
+                post.appendChild(dotsContainer);
+            }
+
+            frame.appendChild(post);
+            document.body.appendChild(frame);
+
+            // Esperamos a que la imagen cargue completamente en el marco fantasma
+            await new Promise((resolve) => {
+                img.onload = resolve;
+            });
+
+            // Tomamos la "foto" en alta resolución (scale: 3)
+            try {
+                const canvas = await html2canvas(frame, {
+                    scale: 3, 
+                    useCORS: true,
+                    backgroundColor: '#fefce8'
+                });
+
+                // Forzamos la descarga al dispositivo
+                const link = document.createElement('a');
+                link.download = `Malacats_${key.toUpperCase()}_Viñeta_${i + 1}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (e) {
+                console.error("Error al exportar la imagen", e);
+            }
+
+            // Limpiamos el marco fantasma
+            document.body.removeChild(frame);
+
+            // Pausa de medio segundo para no saturar el navegador con múltiples descargas de golpe
+            if (i < group.length - 1) {
+                await new Promise(r => setTimeout(r, 600));
+            }
+        }
+
+        btn.innerHTML = '✅ ¡Guardado!';
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }, 3000);
+    }
 
     async function loadComics() {
       const feedContainer = document.getElementById('feed');
@@ -220,11 +349,11 @@
           postEl.className = 'comic-post';
 
           if (group.length === 1) {
-            // AQUÍ ESTÁ LA MAGIA: Envolvemos la imagen única en su propio div
             const wrapper = document.createElement('div');
             wrapper.className = 'single-img-wrapper';
 
             const img = document.createElement('img');
+            img.crossOrigin = "anonymous";
             img.src = group[0].url;
             img.className = 'single-img';
             img.loading = "lazy";
@@ -243,6 +372,7 @@
               const slide = document.createElement('div');
               slide.className = 'carousel-item';
               const img = document.createElement('img');
+              img.crossOrigin = "anonymous";
               img.src = item.url;
               img.loading = "lazy";
               slide.appendChild(img);
@@ -272,6 +402,13 @@
               });
             });
           }
+
+          // Agregamos el botón mágico de descarga al final de cada post
+          const btn = document.createElement('button');
+          btn.className = 'download-btn';
+          btn.innerHTML = '📸 Descargar para IG';
+          btn.onclick = () => exportToIG(key, group, btn);
+          postEl.appendChild(btn);
 
           feedContainer.appendChild(postEl);
         });
