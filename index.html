@@ -5,22 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MALACATS COMICS</title>
   
-  <!-- Favicon Mágico (Patita Sanrio-style generada en código) -->
+  <!-- Favicon Mágico -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23facc15' stroke='%2318181b' stroke-width='1.5' stroke-linejoin='round'><path d='M12 12.5c-2.5 0-4.5 2-4.5 4.5 0 2.5 2 4.5 4.5 4.5s4.5-2 4.5-4.5c0-2.5-2-4.5-4.5-4.5zm-5-2c1.93 0 3.5-1.57 3.5-3.5S8.93 3.5 7 3.5 3.5 5.07 3.5 7 5.07 10.5 7 10.5zm10 0c1.93 0 3.5-1.57 3.5-3.5S18.93 3.5 17 3.5 13.5 5.07 13.5 7 15.07 10.5 17 10.5zm-12.5 7c1.93 0 3.5-1.57 3.5-3.5S6.43 8.5 4.5 8.5 1 10.07 1 12 2.57 15.5 4.5 15.5zm15 0c1.93 0 3.5-1.57 3.5-3.5s-1.57-3.5-3.5-3.5-3.5 1.57-3.5 3.5 1.57 3.5 3.5 3.5z'/></svg>">
 
   <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #18181b;
-      --card-bg: #fffdf2;
-      --accent: #facc15;
-      --ink: #27272a;
+      --bg-light: #fefce8;     
+      --pattern-dots: #fef08a; 
+      --card-bg: #ffffff;      
+      --accent: #facc15;       
+      --ink: #27272a;          
       --text: #3f3f46;
     }
+    
     body {
       font-family: 'Quicksand', sans-serif;
-      background-color: var(--bg-dark);
-      background-image: radial-gradient(#3f3f46 2px, transparent 2px);
+      background-color: var(--bg-light);
+      background-image: radial-gradient(var(--pattern-dots) 2.5px, transparent 2.5px);
       background-size: 24px 24px;
       color: var(--ink);
       margin: 0;
@@ -30,12 +32,13 @@
       align-items: center;
       min-height: 100vh;
     }
+    
     .header {
       width: 100%;
-      background: rgba(24, 24, 27, 0.85);
+      background: rgba(254, 252, 232, 0.85); 
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      border-bottom: 3px solid var(--accent);
+      border-bottom: 3px solid var(--ink);
       padding: 1.2rem 1rem;
       text-align: center;
       position: sticky;
@@ -43,6 +46,7 @@
       z-index: 100;
       box-sizing: border-box;
     }
+    
     .brand {
       font-family: 'Patrick Hand', cursive;
       font-size: 2.5rem;
@@ -51,89 +55,107 @@
       letter-spacing: 2px;
       text-shadow: 3px 3px 0px var(--ink);
     }
+    
     .feed-container {
       width: 100%;
-      max-width: 650px; 
+      max-width: 480px; 
       padding: 3rem 1.5rem;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       gap: 4rem; 
     }
+    
     .comic-post {
       background: var(--card-bg);
       border: 4px solid var(--ink);
       border-radius: 20px;
-      padding: 1.5rem;
-      box-shadow: 10px 10px 0px var(--accent);
+      padding: 1.2rem;
+      box-shadow: 8px 8px 0px var(--ink); 
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
       transition: transform 0.2s ease;
     }
+    
     .comic-post:hover {
       transform: translateY(-4px);
     }
+    
     .single-img {
       width: 100%;
       height: auto;
       border: 3px solid var(--ink);
       border-radius: 12px;
       box-sizing: border-box;
-      box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+      background-color: #fff;
     }
+    
     .carousel-container {
       display: flex;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       gap: 1rem;
-      padding-bottom: 1rem; 
+      padding-bottom: 0.5rem; 
       -ms-overflow-style: none;  
-      scrollbar-width: thin;  
+      scrollbar-width: none; /* Ocultamos la barra de scroll ahora que tenemos puntitos */
     }
-    .carousel-container::-webkit-scrollbar { height: 10px; }
-    .carousel-container::-webkit-scrollbar-track {
-      background: #f4f4f5;
-      border-radius: 8px;
-      border: 2px solid var(--ink);
+    
+    /* Ocultar barra de scroll en Chrome/Safari */
+    .carousel-container::-webkit-scrollbar { 
+      display: none; 
     }
-    .carousel-container::-webkit-scrollbar-thumb {
-      background: var(--accent);
-      border-radius: 8px;
-      border: 2px solid var(--ink);
-    }
+    
     .carousel-item {
       flex: 0 0 100%; 
       scroll-snap-align: center;
     }
+    
     .carousel-item img {
       width: 100%;
       height: auto;
       border: 3px solid var(--ink);
       border-radius: 12px;
       box-sizing: border-box;
-      box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+      background-color: #fff;
     }
-    .swipe-hint {
-      font-size: 0.9rem;
-      color: #71717a;
-      font-weight: 700;
-      text-align: right;
-      margin-top: 0.5rem;
+    
+    /* NUEVO: Contenedor y diseño de los puntitos */
+    .dots-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding-bottom: 4px;
     }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #f4f4f5; /* Color gris muy claro inactivo */
+      border: 2px solid var(--ink);
+      transition: all 0.3s ease;
+    }
+
+    .dot.active {
+      background-color: var(--accent);
+      transform: scale(1.3); /* Crece un poquito cuando está activo */
+    }
+    
     .loader {
       text-align: center;
       font-family: 'Patrick Hand', cursive;
-      color: var(--card-bg);
+      color: var(--ink);
       font-size: 1.8rem;
       padding: 3rem;
-      background: var(--ink);
+      background: var(--card-bg);
       border-radius: 16px;
-      border: 3px solid var(--accent);
+      border: 4px dashed var(--accent);
     }
   </style>
 </head>
-
 <body>
 
   <div class="header">
@@ -145,7 +167,6 @@
   </div>
 
   <script>
-    // --- CONFIGURACIÓN ---
     const githubUser = 'ernestomalaca'; 
     const githubRepo = 'malacats';
     const folderName = 'malacats'; 
@@ -179,7 +200,6 @@
           }
         });
 
-        // Ordenar descendentemente
         const sortedKeys = Object.keys(comicsGrouped).sort((a, b) => {
           const numA = parseInt(a.replace('tira', ''));
           const numB = parseInt(b.replace('tira', ''));
@@ -196,18 +216,21 @@
           postEl.className = 'comic-post';
 
           if (group.length === 1) {
-            // Tira única (sin título repetitivo, solo la imagen)
             const img = document.createElement('img');
             img.src = group[0].url;
             img.className = 'single-img';
             img.loading = "lazy";
             postEl.appendChild(img);
           } else {
-            // Carrusel
             const carousel = document.createElement('div');
             carousel.className = 'carousel-container';
             
-            group.forEach(item => {
+            // Contenedor para los puntitos
+            const dotsContainer = document.createElement('div');
+            dotsContainer.className = 'dots-container';
+            const dotsArray = []; // Para guardar las referencias a los puntitos
+            
+            group.forEach((item, index) => {
               const slide = document.createElement('div');
               slide.className = 'carousel-item';
               const img = document.createElement('img');
@@ -215,13 +238,35 @@
               img.loading = "lazy";
               slide.appendChild(img);
               carousel.appendChild(slide);
+
+              // Crear un puntito por cada imagen
+              const dot = document.createElement('div');
+              dot.className = 'dot';
+              // El primer puntito siempre inicia activo
+              if (index === 0) dot.classList.add('active'); 
+              dotsContainer.appendChild(dot);
+              dotsArray.push(dot);
             });
+
             postEl.appendChild(carousel);
-            
-            const hintEl = document.createElement('div');
-            hintEl.className = 'swipe-hint';
-            hintEl.innerText = 'Desliza para leer 👉';
-            postEl.appendChild(hintEl);
+            postEl.appendChild(dotsContainer);
+
+            // Lógica para iluminar el puntito correcto al deslizar
+            carousel.addEventListener('scroll', () => {
+              // Calculamos en qué slide estamos basándonos en cuánto se ha desplazado el scroll
+              const scrollPosition = carousel.scrollLeft;
+              const slideWidth = carousel.clientWidth;
+              const activeIndex = Math.round(scrollPosition / slideWidth);
+
+              // Actualizamos las clases de los puntitos
+              dotsArray.forEach((dot, index) => {
+                if (index === activeIndex) {
+                  dot.classList.add('active');
+                } else {
+                  dot.classList.remove('active');
+                }
+              });
+            });
           }
 
           feedContainer.appendChild(postEl);
