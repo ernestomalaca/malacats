@@ -5,12 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MALACATS COMICS</title>
   
-  <!-- Favicon Mágico -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23facc15' stroke='%2318181b' stroke-width='1.5' stroke-linejoin='round'><path d='M12 12.5c-2.5 0-4.5 2-4.5 4.5 0 2.5 2 4.5 4.5 4.5s4.5-2 4.5-4.5c0-2.5-2-4.5-4.5-4.5zm-5-2c1.93 0 3.5-1.57 3.5-3.5S8.93 3.5 7 3.5 3.5 5.07 3.5 7 5.07 10.5 7 10.5zm10 0c1.93 0 3.5-1.57 3.5-3.5S18.93 3.5 17 3.5 13.5 5.07 13.5 7 15.07 10.5 17 10.5zm-12.5 7c1.93 0 3.5-1.57 3.5-3.5S6.43 8.5 4.5 8.5 1 10.07 1 12 2.57 15.5 4.5 15.5zm15 0c1.93 0 3.5-1.57 3.5-3.5s-1.57-3.5-3.5-3.5-3.5 1.57-3.5 3.5 1.57 3.5 3.5 3.5z'/></svg>">
 
   <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
-  
-  <!-- Librería para tomar los "Screenshots" automáticos -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
@@ -79,6 +76,7 @@
       flex-direction: column;
       gap: 0.5rem;
       transition: transform 0.2s ease;
+      scroll-margin-top: 100px; /* Para que al autodeslizar no quede tapado por el menú de arriba */
     }
     
     .comic-post:hover {
@@ -150,37 +148,48 @@
       transform: scale(1.3); 
     }
     
-    /* BOTÓN DE DESCARGA */
-    .download-btn {
+    /* NUEVOS ESTILOS PARA LOS DOS BOTONES */
+    .action-buttons {
+      display: flex;
+      gap: 10px;
       margin-top: 0.5rem;
+    }
+
+    .action-btn {
+      flex: 1; /* Hace que ambos botones midan exactamente lo mismo */
       background: var(--accent);
       color: var(--ink);
       font-family: 'Quicksand', sans-serif;
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 0.95rem;
       border: 3px solid var(--ink);
       border-radius: 12px;
-      padding: 0.8rem;
+      padding: 0.8rem 0.5rem;
       cursor: pointer;
       box-shadow: 4px 4px 0px var(--ink);
       transition: transform 0.1s, box-shadow 0.1s;
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
-    .download-btn:active {
+
+    .action-btn:active {
       transform: translate(4px, 4px);
       box-shadow: 0px 0px 0px var(--ink);
     }
-    .download-btn:disabled {
+    
+    .action-btn:disabled {
       opacity: 0.7;
       cursor: not-allowed;
       transform: translate(4px, 4px);
       box-shadow: 0px 0px 0px var(--ink);
     }
 
-    /* CONTENEDOR FANTASMA PARA LA CAPTURA (Se genera y oculta fuera de pantalla) */
+    .action-btn.secondary {
+      background: var(--card-bg); /* Botón blanco para compartir */
+    }
+
     .ig-export-frame {
       position: fixed;
       top: -9999px;
@@ -193,6 +202,7 @@
       box-sizing: border-box;
       z-index: -1;
     }
+    
     .export-post {
       transform: none !important; 
       box-shadow: 8px 8px 0px var(--ink) !important;
@@ -227,18 +237,16 @@
     
     const apiUrl = `https://api.github.com/repos/${githubUser}/${githubRepo}/contents/${folderName}`;
 
-    // Función que hace la magia de tomar la foto para IG
+    // Lógica para exportar imágenes a IG
     async function exportToIG(key, group, btn) {
         const originalText = btn.innerHTML;
-        btn.innerHTML = '⏳ Preparando imágenes...';
+        btn.innerHTML = '⏳ Procesando...';
         btn.disabled = true;
 
         for (let i = 0; i < group.length; i++) {
-            // Creamos un marco fantasma con el fondo de puntitos amarillos
             const frame = document.createElement('div');
             frame.className = 'ig-export-frame';
 
-            // Recreamos la tarjeta blanca
             const post = document.createElement('div');
             post.className = 'comic-post export-post';
 
@@ -246,14 +254,12 @@
             wrapper.className = 'single-img-wrapper';
 
             const img = new Image();
-            img.crossOrigin = "anonymous"; // Vital para que GitHub permita descargar la imagen
+            img.crossOrigin = "anonymous"; 
             img.className = 'single-img';
-            img.src = group[i].url;
-
+            
             wrapper.appendChild(img);
             post.appendChild(wrapper);
 
-            // Recreamos los puntitos de navegación indicando la viñeta actual
             if (group.length > 1) {
                 const dotsContainer = document.createElement('div');
                 dotsContainer.className = 'dots-container';
@@ -268,34 +274,43 @@
             frame.appendChild(post);
             document.body.appendChild(frame);
 
-            // Esperamos a que la imagen cargue completamente en el marco fantasma
             await new Promise((resolve) => {
-                img.onload = resolve;
+                let isResolved = false;
+                const finish = () => {
+                    if (!isResolved) {
+                        isResolved = true;
+                        resolve();
+                    }
+                };
+                
+                img.onload = finish;
+                img.onerror = finish;
+                img.src = group[i].url; 
+                
+                if (img.complete) finish();
+                setTimeout(finish, 4000); 
             });
 
-            // Tomamos la "foto" en alta resolución (scale: 3)
             try {
+                const renderScale = window.innerWidth < 768 ? 2 : 3;
                 const canvas = await html2canvas(frame, {
-                    scale: 3, 
+                    scale: renderScale, 
                     useCORS: true,
                     backgroundColor: '#fefce8'
                 });
 
-                // Forzamos la descarga al dispositivo
                 const link = document.createElement('a');
-                link.download = `Malacats_${key.toUpperCase()}_Viñeta_${i + 1}.png`;
+                link.download = `Malacats_${key.toUpperCase()}_V${i + 1}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             } catch (e) {
-                console.error("Error al exportar la imagen", e);
+                console.error("Error al exportar", e);
             }
 
-            // Limpiamos el marco fantasma
             document.body.removeChild(frame);
 
-            // Pausa de medio segundo para no saturar el navegador con múltiples descargas de golpe
             if (i < group.length - 1) {
-                await new Promise(r => setTimeout(r, 600));
+                await new Promise(r => setTimeout(r, 1000));
             }
         }
 
@@ -304,6 +319,33 @@
             btn.innerHTML = originalText;
             btn.disabled = false;
         }, 3000);
+    }
+
+    // Lógica para Copiar el Enlace
+    function copyLink(key, btn) {
+        // Armamos la URL exacta hacia la tira (ej. malacats.malacamusiclab.com/#tira2)
+        const url = window.location.origin + window.location.pathname + '#' + key;
+        
+        // Función a prueba de balas para copiar (compatible con HTTPS y móviles)
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(url).then(() => showCopiedSuccess(btn));
+        } else {
+            const tempInput = document.createElement('input');
+            tempInput.value = url;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showCopiedSuccess(btn);
+        }
+    }
+
+    function showCopiedSuccess(btn) {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✅ ¡Copiado!';
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+        }, 2000);
     }
 
     async function loadComics() {
@@ -347,6 +389,8 @@
 
           const postEl = document.createElement('div');
           postEl.className = 'comic-post';
+          // Asignamos el ID a la tarjeta para que el link directo sepa a dónde brincar
+          postEl.id = key; 
 
           if (group.length === 1) {
             const wrapper = document.createElement('div');
@@ -403,18 +447,43 @@
             });
           }
 
-          // Agregamos el botón mágico de descarga al final de cada post
-          const btn = document.createElement('button');
-          btn.className = 'download-btn';
-          btn.innerHTML = '📸 Descargar para IG';
-          btn.onclick = () => exportToIG(key, group, btn);
-          postEl.appendChild(btn);
+          // CONTENEDOR DE BOTONES
+          const actionsContainer = document.createElement('div');
+          actionsContainer.className = 'action-buttons';
+
+          // Botón 1: Compartir (Blanco)
+          const shareBtn = document.createElement('button');
+          shareBtn.className = 'action-btn secondary';
+          shareBtn.innerHTML = '🔗 Compartir';
+          shareBtn.onclick = () => copyLink(key, shareBtn);
+          
+          // Botón 2: Descargar (Amarillo)
+          const downloadBtn = document.createElement('button');
+          downloadBtn.className = 'action-btn';
+          downloadBtn.innerHTML = '📸 Para IG';
+          downloadBtn.onclick = () => exportToIG(key, group, downloadBtn);
+
+          actionsContainer.appendChild(shareBtn);
+          actionsContainer.appendChild(downloadBtn);
+          postEl.appendChild(actionsContainer);
 
           feedContainer.appendChild(postEl);
         });
 
         if (sortedKeys.length === 0) {
           feedContainer.innerHTML = '<div class="loader">Aún no hay cómics en la carpeta 😿</div>';
+        }
+
+        // LÓGICA DE AUTO-SCROLL
+        // Si alguien entra mediante un link compartido (ej. #tira2), deslizamos la pantalla hasta esa tira.
+        if (window.location.hash) {
+            const targetId = window.location.hash.substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                setTimeout(() => {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }, 500); // Pequeña pausa para asegurar que las imágenes se dibujaron
+            }
         }
 
       } catch (error) {
