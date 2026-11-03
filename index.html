@@ -23,8 +23,8 @@
     body {
       font-family: 'Quicksand', sans-serif;
       background-color: var(--bg-light);
-      background-image: radial-gradient(var(--pattern-dots) 2.5px, transparent 2.5px);
-      background-size: 24px 24px;
+      /* EL FIX DE LOS PUNTITOS: Usamos un SVG codificado que html2canvas sí puede leer perfecto */
+      background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='12' cy='12' r='2.5' fill='%23fef08a'/%3E%3C/svg%3E");
       color: var(--ink);
       margin: 0;
       padding: 0;
@@ -189,16 +189,15 @@
       background: var(--card-bg); 
     }
 
-    /* EL FIX ESTÁ AQUÍ: Escondemos el cuadro justo detrás del original para no trabar el celular */
+    /* EL FOTÓGRAFO VIRTUAL */
     .ig-export-frame {
       position: fixed;
       top: 0;
       left: 0;
       width: 480px;
-      padding: 2.5rem; 
+      padding: 3rem; /* Más padding para que la sombra entre perfecta */
       background-color: var(--bg-light);
-      background-image: radial-gradient(var(--pattern-dots) 2.5px, transparent 2.5px);
-      background-size: 24px 24px;
+      background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='12' cy='12' r='2.5' fill='%23fef08a'/%3E%3C/svg%3E");
       box-sizing: border-box;
       z-index: -9999;
       pointer-events: none;
@@ -206,7 +205,10 @@
     
     .export-post {
       transform: none !important; 
+      /* Fix de sombra: Le forzamos márgenes para asegurarnos de que la sombra quepa en el cuadro de captura */
       box-shadow: 8px 8px 0px var(--ink) !important;
+      margin-bottom: 12px !important;
+      margin-right: 12px !important;
     }
 
     .loader {
@@ -290,22 +292,16 @@
                 setTimeout(finish, 3000); 
             });
 
-            // Le damos tiempo al navegador para que dibuje el cuadro internamente
             await new Promise(r => setTimeout(r, 200)); 
 
             try {
-                // Fix de RAM: Baja ligeramente el tamaño en celulares para que no crashee, pero sigue siendo HD
                 const renderScale = window.innerWidth < 768 ? 1.5 : 3;
                 
                 const canvas = await html2canvas(frame, {
                     scale: renderScale, 
                     useCORS: true,
-                    backgroundColor: '#fefce8',
-                    logging: false,
-                    x: 0,
-                    y: 0,
-                    width: frame.offsetWidth,
-                    height: frame.offsetHeight
+                    backgroundColor: null, /* EL FIX DE LA SOMBRA: No forzamos un color de fondo sobre la captura para que respete nuestro CSS */
+                    logging: false
                 });
 
                 const link = document.createElement('a');
@@ -318,7 +314,6 @@
 
             document.body.removeChild(frame);
 
-            // Fix de RAM: 1.5 segundos de pausa para dejar respirar la memoria del celular
             if (i < group.length - 1) {
                 await new Promise(r => setTimeout(r, 1500));
             }
@@ -462,7 +457,6 @@
           
           const downloadBtn = document.createElement('button');
           downloadBtn.className = 'action-btn';
-          // AQUÍ CAMBIAMOS EL TEXTO
           downloadBtn.innerHTML = '🐾 Descargar';
           downloadBtn.onclick = () => exportToIG(key, group, downloadBtn);
 
