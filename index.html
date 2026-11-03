@@ -177,6 +177,13 @@
       box-shadow: 0px 0px 0px var(--ink);
     }
     
+    .action-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: translate(4px, 4px);
+      box-shadow: 0px 0px 0px var(--ink);
+    }
+
     .action-btn.secondary {
       background: var(--card-bg); 
     }
@@ -188,7 +195,7 @@
     }
 
     /* =========================================
-       EL FOTÓGRAFO VIRTUAL (TRUCO DEL PADDING)
+       EL FOTÓGRAFO VIRTUAL (SOMBRA EXACTA)
        ========================================= */
     .ig-export-frame {
       position: fixed;
@@ -203,17 +210,26 @@
       pointer-events: none;
     }
 
-    /* EL FIX DEFINITIVO: Una envoltura oscura que usa padding para imitar la sombra */
-    .export-shadow-wrapper {
-      background-color: #27272a !important; /* Color de la sombra */
-      border-radius: 24px !important; 
-      padding: 0 10px 10px 0 !important; /* Empuja el cómic arriba a la izq, revelando la sombra */
+    .export-container {
+      position: relative;
       width: 100%;
-      box-sizing: border-box;
+      margin-bottom: 8px; /* Espacio para que la sombra extra no se recorte */
+      margin-right: 8px;
+    }
+
+    /* La Sombra Inmortal (ahora se dimensiona con JavaScript) */
+    .export-fake-shadow {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background-color: #27272a !important;
+      border-radius: 20px !important;
+      z-index: 1;
     }
     
-    /* La tarjeta del cómic que va por dentro, sin sombra propia */
     .export-post {
+      position: relative;
+      z-index: 2;
       box-shadow: none !important; 
       transform: none !important; 
       margin: 0 !important;
@@ -271,9 +287,11 @@
             const frame = document.createElement('div');
             frame.className = 'ig-export-frame';
 
-            // Aquí inyectamos nuestra caja de "sombra"
-            const shadowWrapper = document.createElement('div');
-            shadowWrapper.className = 'export-shadow-wrapper';
+            const container = document.createElement('div');
+            container.className = 'export-container';
+
+            const fakeShadow = document.createElement('div');
+            fakeShadow.className = 'export-fake-shadow';
 
             const post = document.createElement('div');
             post.className = 'comic-post export-post';
@@ -299,9 +317,9 @@
                 post.appendChild(dotsContainer);
             }
 
-            // Metemos el cómic a la caja de sombra, y la caja al marco
-            shadowWrapper.appendChild(post);
-            frame.appendChild(shadowWrapper);
+            container.appendChild(fakeShadow);
+            container.appendChild(post);
+            frame.appendChild(container);
             document.body.appendChild(frame);
 
             await new Promise((resolve) => {
@@ -320,6 +338,13 @@
             });
 
             await new Promise(r => setTimeout(r, 200)); 
+
+            // LA MAGIA DE LOS PÍXELES EXACTOS: Copiamos el tamaño exacto del cómic a la sombra
+            fakeShadow.style.width = post.offsetWidth + 'px';
+            fakeShadow.style.height = post.offsetHeight + 'px';
+
+            // Damos un respiro extra para que el navegador aplique los tamaños
+            await new Promise(r => setTimeout(r, 100)); 
 
             try {
                 const canvas = await html2canvas(frame, {
