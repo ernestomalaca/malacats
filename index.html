@@ -181,32 +181,57 @@
       background: var(--card-bg); 
     }
 
-    /* MAGIA MÓVIL: Ocultamos el botón de descarga en celulares */
     @media (max-width: 768px) {
       .desktop-only {
         display: none !important;
       }
     }
 
+    /* =========================================
+       EL FOTÓGRAFO VIRTUAL (TRUCO DEL PADDING)
+       ========================================= */
     .ig-export-frame {
       position: fixed;
       top: 0;
       left: 0;
       width: 480px;
-      padding: 3rem; 
+      padding: 35px; 
       background-color: var(--bg-light);
       background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='12' cy='12' r='2.5' fill='%23fef08a'/%3E%3C/svg%3E");
       box-sizing: border-box;
       z-index: -9999;
       pointer-events: none;
     }
+
+    /* EL FIX DEFINITIVO: Una envoltura oscura que usa padding para imitar la sombra */
+    .export-shadow-wrapper {
+      background-color: #27272a !important; /* Color de la sombra */
+      border-radius: 24px !important; 
+      padding: 0 10px 10px 0 !important; /* Empuja el cómic arriba a la izq, revelando la sombra */
+      width: 100%;
+      box-sizing: border-box;
+    }
     
+    /* La tarjeta del cómic que va por dentro, sin sombra propia */
     .export-post {
+      box-shadow: none !important; 
       transform: none !important; 
-      /* EL FIX DE LA SOMBRA: Usamos los colores HEX directos (#27272a) y le damos margen para que quepa */
+      margin: 0 !important;
       border: 4px solid #27272a !important;
-      box-shadow: 10px 10px 0px #27272a !important;
-      margin: 0 10px 10px 0 !important;
+      background: #ffffff !important;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .export-post .single-img, .export-post .carousel-item img {
+      border: 3px solid #27272a !important;
+    }
+    .export-post .dot {
+      border: 2px solid #27272a !important;
+      background-color: #f4f4f5 !important;
+    }
+    .export-post .dot.active {
+      background-color: #facc15 !important;
     }
 
     .loader {
@@ -246,6 +271,10 @@
             const frame = document.createElement('div');
             frame.className = 'ig-export-frame';
 
+            // Aquí inyectamos nuestra caja de "sombra"
+            const shadowWrapper = document.createElement('div');
+            shadowWrapper.className = 'export-shadow-wrapper';
+
             const post = document.createElement('div');
             post.className = 'comic-post export-post';
 
@@ -270,7 +299,9 @@
                 post.appendChild(dotsContainer);
             }
 
-            frame.appendChild(post);
+            // Metemos el cómic a la caja de sombra, y la caja al marco
+            shadowWrapper.appendChild(post);
+            frame.appendChild(shadowWrapper);
             document.body.appendChild(frame);
 
             await new Promise((resolve) => {
@@ -291,11 +322,10 @@
             await new Promise(r => setTimeout(r, 200)); 
 
             try {
-                // Al ser función solo de escritorio, forzamos siempre la mayor calidad (scale 3)
                 const canvas = await html2canvas(frame, {
                     scale: 3, 
                     useCORS: true,
-                    backgroundColor: null, 
+                    backgroundColor: null,
                     logging: false
                 });
 
@@ -445,13 +475,11 @@
           const actionsContainer = document.createElement('div');
           actionsContainer.className = 'action-buttons';
 
-          // Botón Compartir (Se ve en todos lados y se expande en celular)
           const shareBtn = document.createElement('button');
           shareBtn.className = 'action-btn secondary';
           shareBtn.innerHTML = '🔗 Compartir';
           shareBtn.onclick = () => copyLink(key, shareBtn);
           
-          // Botón Descargar (Con la nueva clase "desktop-only")
           const downloadBtn = document.createElement('button');
           downloadBtn.className = 'action-btn desktop-only';
           downloadBtn.innerHTML = '🐾 Descargar';
